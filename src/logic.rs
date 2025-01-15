@@ -1,7 +1,7 @@
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Game {
     pub id: u16,
-    pub cells: [i8; 4], // todo: something nullable
+    pub cells: [Option<i8>; 4],
     pub foundations: [Vec<i8>; 4],
     pub columns: [Vec<i8>; 8]
 }
