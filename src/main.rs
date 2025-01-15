@@ -1,10 +1,6 @@
-#[derive(Debug)]
-struct Game {
-    id: u16,
-    cells: [i8; 4], // todo: something nullable
-    foundations: [Vec<i8>; 4],
-    columns: [Vec<i8>; 8]
-}
+use crate::logic::Game;
+
+pub mod logic;
 
 fn main() {
     println!("Hello, world!");
