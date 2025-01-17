@@ -1,5 +1,6 @@
 pub mod lib {
     use std::convert::TryFrom;
+    use std::fmt;
 
     #[derive(Copy, Clone, Debug, PartialEq)]
     pub enum Rank {
@@ -91,6 +92,74 @@ pub mod lib {
         }
     }
 
+    impl fmt::Display for Card {
+        fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+            let rank = match self.rank {
+                Rank::Ace => "A",
+                Rank::Two => "2",
+                Rank::Three => "3",
+                Rank::Four => "4",
+                Rank::Five => "5",
+                Rank::Six => "6",
+                Rank::Seven => "7",
+                Rank::Eight => "8",
+                Rank::Nine => "9",
+                Rank::Ten => "T",
+                Rank::Jack => "J",
+                Rank::Queen => "Q",
+                Rank::King => "K",
+            };
+
+            let suit = match self.suit {
+                Suit::Clubs => "♣",
+                Suit::Diamonds => "♦",
+                Suit::Hearts => "♥",
+                Suit::Spades => "♠",
+            };
+
+            write!(f, "{}{}", rank, suit)
+        }
+    }
+
+    impl TryFrom<&str> for Card {
+        type Error = ();
+
+        fn try_from(value: &str) -> Result<Self, Self::Error> {
+            if value.len() < 3 {
+                return Err(());
+            }
+
+            let mut chars = value.chars();
+
+            let rank = match chars.next().unwrap() {
+                'A' => Rank::Ace,
+                '2' => Rank::Two,
+                '3' => Rank::Three,
+                '4' => Rank::Four,
+                '5' => Rank::Five,
+                '6' => Rank::Six,
+                '7' => Rank::Seven,
+                '8' => Rank::Eight,
+                '9' => Rank::Nine,
+                'T' => Rank::Ten,
+                'J' => Rank::Jack,
+                'Q' => Rank::Queen,
+                'K' => Rank::King,
+                _ => return Err(()),
+            };
+
+            let suit = match chars.next().unwrap() {
+                '♣' => Suit::Clubs,
+                '♦' => Suit::Diamonds,
+                '♥' => Suit::Hearts,
+                '♠' => Suit::Spades,
+                _ => return Err(()),
+            };
+
+            Ok(Card { rank, suit })
+        }
+    }
+
     #[derive(Debug, Clone)]
     pub struct Game {
         pub id: u16,
@@ -104,7 +173,7 @@ pub mod lib {
         use super::*;
 
         #[test]
-        fn card_partialeq_works() {
+        fn card_partialeq_trait_works() {
             let card1 = Card::new(0);
             let card2 = Card::new(0);
             let card3 = Card::new(42);
@@ -130,6 +199,43 @@ pub mod lib {
         #[should_panic]
         fn card_when_given_large_id_panics() {
             let _ = Card::new(52);
+        }
+
+        #[test]
+        fn card_display_trait_works() {
+            let card1 = Card::new(0);
+
+            assert_eq!(card1.to_string(), "A♣");
+
+            let card2 = Card::new(42);
+
+            assert_eq!(card2.to_string(), "J♥");
+        }
+
+        #[test]
+        fn card_tryfrom_ref_str_with_unicode_representation_works() {
+            let card1 = Card::try_from("T♣").unwrap();
+
+            assert_eq!(Card::new(36), card1);
+
+            let card2 = Card::try_from("J♥").unwrap();
+
+            assert_eq!(Card::new(42), card2);
+        }
+
+        #[test]
+        fn card_tryfrom_with_short_string_errors() {
+            let _ = Card::try_from("T").expect_err("should have error");
+        }
+
+        #[test]
+        fn card_tryfrom_with_bad_input1_errors() {
+            let _ = Card::try_from("R♣").expect_err("should have error");
+        }
+
+        #[test]
+        fn card_tryfrom_with_bad_input2_errors() {
+            let _ = Card::try_from("T?").expect_err("should have error");
         }
 
         #[test]
