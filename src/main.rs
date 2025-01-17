@@ -1,6 +1,4 @@
-use crate::logic::Game;
-
-pub mod logic;
+use rslibrecell::lib::Game;
 
 fn main() {
     println!("Hello, world!");

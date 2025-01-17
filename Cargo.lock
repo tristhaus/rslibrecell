@@ -3,5 +3,5 @@
 version = 4
 
 [[package]]
-name = "RSLibreCell"
+name = "rslibrecell"
 version = "0.1.0"
