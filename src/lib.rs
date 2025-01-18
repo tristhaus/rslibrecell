@@ -160,7 +160,7 @@ pub mod lib {
         }
     }
 
-    #[derive(Debug, Clone)]
+    #[derive(Clone, Debug, PartialEq)]
     pub struct Game {
         pub id: u16,
         pub cells: [Option<Card>; 4],
@@ -274,6 +274,96 @@ pub mod lib {
 
             assert!(clone.columns[3].is_empty());
             assert_eq!(Card::new(4), game.columns[3][0]);
+        }
+
+        #[test]
+        fn game_partialeq_trait_works() {
+            let mut game1 = Game {
+                id: 17,
+                cells: [None, None, None, None],
+                foundations: [Vec::new(), Vec::new(), Vec::new(), Vec::new()],
+                columns: [
+                    Vec::new(),
+                    Vec::new(),
+                    Vec::new(),
+                    Vec::new(),
+                    Vec::new(),
+                    Vec::new(),
+                    Vec::new(),
+                    Vec::new(),
+                ],
+            };
+
+            game1.cells[1] = Some(Card::new(2));
+            game1.foundations[2].push(Card::new(3));
+            game1.columns[3].push(Card::new(4));
+
+            let game2 = game1.clone();
+
+            let mut game3 = Game {
+                id: 17,
+                cells: [None, None, None, None],
+                foundations: [Vec::new(), Vec::new(), Vec::new(), Vec::new()],
+                columns: [
+                    Vec::new(),
+                    Vec::new(),
+                    Vec::new(),
+                    Vec::new(),
+                    Vec::new(),
+                    Vec::new(),
+                    Vec::new(),
+                    Vec::new(),
+                ],
+            };
+
+            game3.cells[1] = Some(Card::new(50));
+            game3.foundations[2].push(Card::new(3));
+            game3.columns[3].push(Card::new(4));
+
+            let mut game4 = Game {
+                id: 17,
+                cells: [None, None, None, None],
+                foundations: [Vec::new(), Vec::new(), Vec::new(), Vec::new()],
+                columns: [
+                    Vec::new(),
+                    Vec::new(),
+                    Vec::new(),
+                    Vec::new(),
+                    Vec::new(),
+                    Vec::new(),
+                    Vec::new(),
+                    Vec::new(),
+                ],
+            };
+
+            game4.cells[1] = Some(Card::new(2));
+            game4.foundations[2].push(Card::new(50));
+            game4.columns[3].push(Card::new(4));
+
+            let mut game5 = Game {
+                id: 17,
+                cells: [None, None, None, None],
+                foundations: [Vec::new(), Vec::new(), Vec::new(), Vec::new()],
+                columns: [
+                    Vec::new(),
+                    Vec::new(),
+                    Vec::new(),
+                    Vec::new(),
+                    Vec::new(),
+                    Vec::new(),
+                    Vec::new(),
+                    Vec::new(),
+                ],
+            };
+
+            game5.cells[1] = Some(Card::new(2));
+            game5.foundations[2].push(Card::new(3));
+            game5.columns[3].push(Card::new(50));
+
+            assert_eq!(game1, game2);
+            assert_ne!(game1, game3);
+            assert_ne!(game1, game4);
+            assert_ne!(game1, game5);
         }
     }
 }
