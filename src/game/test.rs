@@ -130,30 +130,31 @@ fn game_partialeq_trait_works() {
 
 #[test]
 fn game_display_trait_works() {
-    let reference = "RustLibreCell                 #42 
-
- T♣  ..  ..  Q♥ || 2♣  ..  A♥  2♦ 
---------------------------------- 
-  5♠  J♠  K♠  K♦  A♠      5♣  K♣ 
-  4♦  2♥  7♠  6♣  8♠      4♥  Q♦ 
-      J♦  Q♠  3♣  3♠          J♣ 
-      9♠  T♦  8♦  K♥             
-      9♦  9♣  7♦  T♥             
-      6♥  8♥  6♦  5♦             
-      8♣  7♣  Q♣  4♠             
-      7♥      J♥  3♦             
-      6♠      T♠  2♠             
-      5♥      9♥                 
-      4♣                         
-      3♥                         
-                                 
-                                 
-                                 
-                                 
-                                 
-                                 
-                                 
-";
+    let reference = concat!(
+        "RustLibreCell                 #42 \n",
+        "\n",
+        " T♣  ..  ..  Q♥ || 2♣  ..  A♥  2♦ \n",
+        "--------------------------------- \n",
+        "  5♠  J♠  K♠  K♦  A♠      5♣  K♣ \n",
+        "  4♦  2♥  7♠  6♣  8♠      4♥  Q♦ \n",
+        "      J♦  Q♠  3♣  3♠          J♣ \n",
+        "      9♠  T♦  8♦  K♥             \n",
+        "      9♦  9♣  7♦  T♥             \n",
+        "      6♥  8♥  6♦  5♦             \n",
+        "      8♣  7♣  Q♣  4♠             \n",
+        "      7♥      J♥  3♦             \n",
+        "      6♠      T♠  2♠             \n",
+        "      5♥      9♥                 \n",
+        "      4♣                         \n",
+        "      3♥                         \n",
+        "                                 \n",
+        "                                 \n",
+        "                                 \n",
+        "                                 \n",
+        "                                 \n",
+        "                                 \n",
+        "                                 \n"
+    );
     let game = Game {
         id: 42,
         cells: [
@@ -233,28 +234,30 @@ fn game_display_trait_works() {
 
 #[test]
 fn game_tryfrom_ref_str_with_unicode_representation_works() {
-    let input = "RustLibreCell                 #42
-
- T♣  ..  ..  Q♥ || 2♣  ..  A♥  2♦ 
---------------------------------- 
-  5♠  J♠  K♠  K♦  A♠      5♣  K♣ 
-  4♦  2♥  7♠  6♣  8♠      4♥  Q♦ 
-      J♦  Q♠  3♣  3♠          J♣ 
-      9♠  T♦  8♦  K♥             
-      9♦  9♣  7♦  T♥             
-      6♥  8♥  6♦  5♦             
-      8♣  7♣  Q♣  4♠             
-      7♥      J♥  3♦             
-      6♠      T♠  2♠             
-      5♥      9♥                 
-      4♣                         
-      3♥                         
-                                 
-                                 
-                                 
-                                 
-                                 
-                                 ";
+    let input = concat!(
+        "RustLibreCell                 #42\n",
+        "\n",
+        " T♣  ..  ..  Q♥ || 2♣  ..  A♥  2♦ \n",
+        "--------------------------------- \n",
+        "  5♠  J♠  K♠  K♦  A♠      5♣  K♣ \n",
+        "  4♦  2♥  7♠  6♣  8♠      4♥  Q♦ \n",
+        "      J♦  Q♠  3♣  3♠          J♣ \n",
+        "      9♠  T♦  8♦  K♥             \n",
+        "      9♦  9♣  7♦  T♥             \n",
+        "      6♥  8♥  6♦  5♦             \n",
+        "      8♣  7♣  Q♣  4♠             \n",
+        "      7♥      J♥  3♦             \n",
+        "      6♠      T♠  2♠             \n",
+        "      5♥      9♥                 \n",
+        "      4♣                         \n",
+        "      3♥                         \n",
+        "                                 \n",
+        "                                 \n",
+        "                                 \n",
+        "                                 \n",
+        "                                 \n",
+        "                                 \n"
+    );
 
     let reference = Game {
         id: 42,
@@ -349,84 +352,90 @@ fn game_tryfrom_no_cell_line_errors() {
 
 #[test]
 fn game_tryfrom_bad_card_in_column_errors() {
-    let input = "RustLibreCell                 #42
-
- T♣  ..  ..  Q♥ || 2♣  ..  A♥  2♦ 
---------------------------------- 
-  5♠  J♠  K♠  K♦  XX      5♣  K♣ 
-  4♦  2♥  7♠  6♣  8♠      4♥  Q♦ 
-      J♦  Q♠  3♣  3♠          J♣ 
-      9♠  T♦  8♦  K♥             
-      9♦  9♣  7♦  T♥             
-      6♥  8♥  6♦  5♦             
-      8♣  7♣  Q♣  4♠             
-      7♥      J♥  3♦             
-      6♠      T♠  2♠             
-      5♥      9♥                 
-      4♣                         
-      3♥                         
-                                 
-                                 
-                                 
-                                 
-                                 
-                                 ";
+    let input = concat!(
+        "RustLibreCell                 #42\n",
+        "\n",
+        " T♣  ..  ..  Q♥ || 2♣  ..  A♥  2♦ \n",
+        "--------------------------------- \n",
+        "  5♠  J♠  K♠  K♦  XX      5♣  K♣ \n",
+        "  4♦  2♥  7♠  6♣  8♠      4♥  Q♦ \n",
+        "      J♦  Q♠  3♣  3♠          J♣ \n",
+        "      9♠  T♦  8♦  K♥             \n",
+        "      9♦  9♣  7♦  T♥             \n",
+        "      6♥  8♥  6♦  5♦             \n",
+        "      8♣  7♣  Q♣  4♠             \n",
+        "      7♥      J♥  3♦             \n",
+        "      6♠      T♠  2♠             \n",
+        "      5♥      9♥                 \n",
+        "      4♣                         \n",
+        "      3♥                         \n",
+        "                                 \n",
+        "                                 \n",
+        "                                 \n",
+        "                                 \n",
+        "                                 \n",
+        "                                 \n"
+    );
 
     Game::try_from(input).expect_err("should have error")
 }
 
 #[test]
 fn game_tryfrom_card_missing_errors() {
-    let ace_of_hearts_missing = "RustLibreCell                 #42
-
- T♣  ..  ..  Q♥ || 2♣  ..  ..  2♦ 
---------------------------------- 
-  5♠  J♠  K♠  K♦  A♠      5♣  K♣ 
-  4♦  2♥  7♠  6♣  8♠      4♥  Q♦ 
-      J♦  Q♠  3♣  3♠          J♣ 
-      9♠  T♦  8♦  K♥             
-      9♦  9♣  7♦  T♥             
-      6♥  8♥  6♦  5♦             
-      8♣  7♣  Q♣  4♠             
-      7♥      J♥  3♦             
-      6♠      T♠  2♠             
-      5♥      9♥                 
-      4♣                         
-      3♥                         
-                                 
-                                 
-                                 
-                                 
-                                 
-                                 ";
+    let ace_of_hearts_missing = concat!(
+        "RustLibreCell                 #42\n",
+        "\n",
+        " T♣  ..  ..  Q♥ || 2♣  ..  ..  2♦ \n",
+        "--------------------------------- \n",
+        "  5♠  J♠  K♠  K♦  A♠      5♣  K♣ \n",
+        "  4♦  2♥  7♠  6♣  8♠      4♥  Q♦ \n",
+        "      J♦  Q♠  3♣  3♠          J♣ \n",
+        "      9♠  T♦  8♦  K♥             \n",
+        "      9♦  9♣  7♦  T♥             \n",
+        "      6♥  8♥  6♦  5♦             \n",
+        "      8♣  7♣  Q♣  4♠             \n",
+        "      7♥      J♥  3♦             \n",
+        "      6♠      T♠  2♠             \n",
+        "      5♥      9♥                 \n",
+        "      4♣                         \n",
+        "      3♥                         \n",
+        "                                 \n",
+        "                                 \n",
+        "                                 \n",
+        "                                 \n",
+        "                                 \n",
+        "                                 \n"
+    );
 
     Game::try_from(ace_of_hearts_missing).expect_err("should have error")
 }
 
 #[test]
 fn game_tryfrom_duplicated_card_errors() {
-    let ace_of_diamonds_twice = "RustLibreCell                 #42
-
- T♣  ..  A♦  Q♥ || 2♣  ..  ..  2♦ 
---------------------------------- 
-  5♠  J♠  K♠  K♦  A♠      5♣  K♣ 
-  4♦  2♥  7♠  6♣  8♠      4♥  Q♦ 
-      J♦  Q♠  3♣  3♠          J♣ 
-      9♠  T♦  8♦  K♥             
-      9♦  9♣  7♦  T♥             
-      6♥  8♥  6♦  5♦             
-      8♣  7♣  Q♣  4♠             
-      7♥      J♥  3♦             
-      6♠      T♠  2♠             
-      5♥      9♥                 
-      4♣                         
-      3♥                         
-                                 
-                                 
-                                 
-                                 
-                                 
-                                 ";
+    let ace_of_diamonds_twice = concat!(
+        "RustLibreCell                 #42\n",
+        "\n",
+        " T♣  ..  A♦  Q♥ || 2♣  ..  ..  2♦ \n",
+        "--------------------------------- \n",
+        "  5♠  J♠  K♠  K♦  A♠      5♣  K♣ \n",
+        "  4♦  2♥  7♠  6♣  8♠      4♥  Q♦ \n",
+        "      J♦  Q♠  3♣  3♠          J♣ \n",
+        "      9♠  T♦  8♦  K♥             \n",
+        "      9♦  9♣  7♦  T♥             \n",
+        "      6♥  8♥  6♦  5♦             \n",
+        "      8♣  7♣  Q♣  4♠             \n",
+        "      7♥      J♥  3♦             \n",
+        "      6♠      T♠  2♠             \n",
+        "      5♥      9♥                 \n",
+        "      4♣                         \n",
+        "      3♥                         \n",
+        "                                 \n",
+        "                                 \n",
+        "                                 \n",
+        "                                 \n",
+        "                                 \n",
+        "                                 \n"
+    );
 
     Game::try_from(ace_of_diamonds_twice).expect_err("should have error")
 }
