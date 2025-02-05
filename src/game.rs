@@ -212,5 +212,13 @@ impl TryFrom<&str> for Game {
     }
 }
 
+impl Game {
+    pub fn is_won(&self) -> bool {
+        let count: usize = self.foundations.iter().map(|x| x.len()).sum();
+
+        count == 52
+    }
+}
+
 #[cfg(test)]
 mod test;

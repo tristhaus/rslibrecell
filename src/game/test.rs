@@ -439,3 +439,50 @@ fn game_tryfrom_duplicated_card_errors() {
 
     Game::try_from(ace_of_diamonds_twice).expect_err("should have error")
 }
+
+#[test]
+fn game_is_won_all_cards_on_foundations_true() {
+    let input = concat!(
+        "RustLibreCell                 #42\n",
+        "\n",
+        " ..  ..  ..  .. || K♣  K♠  K♥  K♦ \n",
+        "--------------------------------- \n",
+        "                                 \n"
+    );
+
+    let game = Game::try_from(input).unwrap();
+
+    assert!(game.is_won());
+}
+
+#[test]
+fn game_is_won_not_all_cards_on_foundations_false() {
+    let input = concat!(
+        "RustLibreCell                 #42\n",
+        "\n",
+        " T♣  ..  ..  Q♥ || 2♣  ..  A♥  2♦ \n",
+        "--------------------------------- \n",
+        "  5♠  J♠  K♠  K♦  A♠      5♣  K♣ \n",
+        "  4♦  2♥  7♠  6♣  8♠      4♥  Q♦ \n",
+        "      J♦  Q♠  3♣  3♠          J♣ \n",
+        "      9♠  T♦  8♦  K♥             \n",
+        "      9♦  9♣  7♦  T♥             \n",
+        "      6♥  8♥  6♦  5♦             \n",
+        "      8♣  7♣  Q♣  4♠             \n",
+        "      7♥      J♥  3♦             \n",
+        "      6♠      T♠  2♠             \n",
+        "      5♥      9♥                 \n",
+        "      4♣                         \n",
+        "      3♥                         \n",
+        "                                 \n",
+        "                                 \n",
+        "                                 \n",
+        "                                 \n",
+        "                                 \n",
+        "                                 \n"
+    );
+
+    let game = Game::try_from(input).unwrap();
+
+    assert!(!game.is_won());
+}
