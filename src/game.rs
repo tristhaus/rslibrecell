@@ -1,7 +1,10 @@
+mod prng;
+
 use std::convert::TryFrom;
 use std::{collections, fmt};
 
 use crate::card::Card;
+use crate::game::prng::Prng;
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct Game {
@@ -213,6 +216,41 @@ impl TryFrom<&str> for Game {
 }
 
 impl Game {
+    pub fn from_id(id: u16) -> Game {
+        let mut prng = Prng { state: id as u32 };
+
+        let mut game = Game {
+            id,
+            cells: [None, None, None, None],
+            foundations: [Vec::new(), Vec::new(), Vec::new(), Vec::new()],
+            columns: [
+                Vec::new(),
+                Vec::new(),
+                Vec::new(),
+                Vec::new(),
+                Vec::new(),
+                Vec::new(),
+                Vec::new(),
+                Vec::new(),
+            ],
+        };
+
+        let mut deck: Vec<Card> = (0..52).map(|x| Card::from_id(x)).collect::<Vec<_>>();
+
+        let mut column_index = 0;
+        while !deck.is_empty() {
+            let deck_index = prng.get_next() as usize % deck.len();
+
+            let last_deck_index = deck.len() - 1;
+            deck.swap(deck_index, last_deck_index);
+            game.columns[column_index].push(deck.pop().unwrap());
+
+            column_index = (column_index + 1) % 8;
+        }
+
+        return game;
+    }
+
     pub fn is_won(&self) -> bool {
         let count: usize = self.foundations.iter().map(|x| x.len()).sum();
 

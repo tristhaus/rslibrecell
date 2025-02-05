@@ -486,3 +486,72 @@ fn game_is_won_not_all_cards_on_foundations_false() {
 
     assert!(!game.is_won());
 }
+
+#[test]
+fn game_from_id_00001_works() {
+    let reference = concat!(
+        "RustLibreCell                  #1\n",
+        "\n",
+        " ..  ..  ..  .. || ..  ..  ..  .. \n",
+        "--------------------------------- \n",
+        "  J♦  2♦  9♥  J♣  5♦  7♥  7♣  5♥ \n",
+        "  K♦  K♣  9♠  5♠  A♦  Q♣  K♥  3♥ \n",
+        "  2♠  K♠  9♦  Q♦  J♠  A♠  A♥  3♣ \n",
+        "  4♣  5♣  T♠  Q♥  4♥  A♣  4♦  7♠ \n",
+        "  3♠  T♦  4♠  T♥  8♥  2♣  J♥  7♦ \n",
+        "  6♦  8♠  8♦  Q♠  6♣  3♦  8♣  T♣ \n",
+        "  6♠  9♣  2♥  6♥                 \n",
+    );
+
+    let expected = Game::try_from(reference).unwrap();
+
+    let actual = Game::from_id(1);
+
+    assert_eq!(expected, actual);
+}
+
+#[test]
+fn game_from_id_00617_works() {
+    let reference = concat!(
+        "RustLibreCell                #617\n",
+        "\n",
+        " ..  ..  ..  .. || ..  ..  ..  .. \n",
+        "--------------------------------- \n",
+        "  7♦  A♦  5♣  3♠  5♠  8♣  2♦  A♥ \n",
+        "  T♦  7♠  Q♦  A♣  6♦  8♥  A♠  K♥ \n",
+        "  T♥  Q♣  3♥  9♦  6♠  8♦  3♦  T♣ \n",
+        "  K♦  5♥  9♠  3♣  8♠  7♥  4♦  J♠ \n",
+        "  4♣  Q♠  9♣  9♥  7♣  6♥  2♣  2♠ \n",
+        "  4♠  T♠  2♥  5♦  J♣  6♣  J♥  Q♥ \n",
+        "  J♦  K♠  K♣  4♥                 \n",
+    );
+
+    let expected = Game::try_from(reference).unwrap();
+
+    let actual = Game::from_id(617);
+
+    assert_eq!(expected, actual);
+}
+
+#[test]
+fn game_from_id_30828_works() {
+    let reference = concat!(
+        "RustLibreCell              #30828\n",
+        "\n",
+        " ..  ..  ..  .. || ..  ..  ..  .. \n",
+        "--------------------------------- \n",
+        "  4♦  T♥  J♣  9♦  7♠  3♠  J♦  5♠ \n",
+        "  Q♠  K♠  8♥  K♥  5♥  6♦  2♠  3♦ \n",
+        "  3♣  8♣  3♥  6♥  6♠  5♦  A♠  2♦ \n",
+        "  4♥  5♣  9♣  4♣  A♣  Q♥  6♣  9♥ \n",
+        "  8♦  A♦  T♦  K♣  7♥  A♥  8♠  T♠ \n",
+        "  Q♣  2♥  T♣  J♥  K♦  Q♦  9♠  2♣ \n",
+        "  7♣  J♠  4♠  7♦                 \n",
+    );
+
+    let expected = Game::try_from(reference).unwrap();
+
+    let actual = Game::from_id(30828);
+
+    assert_eq!(expected, actual);
+}
