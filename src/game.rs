@@ -56,7 +56,7 @@ impl fmt::Display for Game {
                     Some(card) => result = format!("{} {} ", result, card),
                 }
             }
-            result += "\n";
+            result += " \n";
         }
 
         write!(f, "{}", result)
