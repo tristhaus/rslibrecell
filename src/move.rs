@@ -9,8 +9,8 @@ pub enum Location {
 }
 
 pub struct Move {
-    from: Location,
-    to: Location,
+    pub from: Location,
+    pub to: Location,
 }
 
 pub fn apply(game: &Game, mv: Move) -> Result<Game, ()> {
