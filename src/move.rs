@@ -261,6 +261,10 @@ mod detail {
     }
 
     pub fn fit_together(upper: &Card, lower: &Card) -> bool {
+        if *upper.rank() == Rank::Ace {
+            return false;
+        }
+
         let is_red = |card: Card| -> bool {
             return *card.suit() == Suit::Hearts || *card.suit() == Suit::Diamonds;
         };

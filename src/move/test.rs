@@ -1625,3 +1625,65 @@ fn apply_column_five_to_column_filled_matching_supermoves_four_cards_columns_onl
 
     helper::assert_move_succeeds(input, mv, reference);
 }
+
+#[test]
+fn apply_column_six_to_column_filled_matching_supermoves_three_cards_involving_an_ace() {
+    let input = concat!(
+        "RustLibreCell                #100\n",
+        "\n",
+        " 5♦  ..  ..  .. || ..  ..  ..  .. \n",
+        "--------------------------------- \n",
+        "  A♦  J♠  4♠  Q♣  7♣  6♦  J♥  T♦  \n",
+        "  Q♥  T♠  5♣  9♦  4♥  J♦  K♦  A♥  \n",
+        "  Q♠  T♥  7♠  8♥  9♣  6♥  A♣  A♠  \n",
+        "  6♠  5♥  6♣  3♦  4♦  2♠  9♥  7♥  \n",
+        "  3♣  K♠  J♣  3♠  T♣  4♣  8♠  3♥  \n",
+        "  2♣  2♥  K♥  8♣      8♦  7♦  2♦  \n",
+        "      K♣  9♠  5♠                  \n",
+        "      Q♦                          \n",
+        "                                  \n",
+        "                                  \n",
+        "                                  \n",
+        "                                  \n",
+        "                                  \n",
+        "                                  \n",
+        "                                  \n",
+        "                                  \n",
+        "                                  \n",
+        "                                  \n",
+        "                                  \n"
+    );
+
+    let mv = Move {
+        from: Location::Column { i: 6 },
+        to: Location::Column { i: 4 },
+    };
+
+    let reference = concat!(
+        "RustLibreCell                #100\n",
+        "\n",
+        " 5♦  ..  ..  .. || ..  ..  ..  .. \n",
+        "--------------------------------- \n",
+        "  A♦  J♠  4♠  Q♣  7♣  6♦  J♥  T♦  \n",
+        "  Q♥  T♠  5♣  9♦  4♥  J♦  K♦  A♥  \n",
+        "  Q♠  T♥  7♠  8♥  9♣  6♥  A♣  A♠  \n",
+        "  6♠  5♥  6♣  3♦  4♦  2♠      7♥  \n",
+        "  3♣  K♠  J♣  3♠  T♣  4♣      3♥  \n",
+        "  2♣  2♥  K♥  8♣  9♥  8♦      2♦  \n",
+        "      K♣  9♠  5♠  8♠              \n",
+        "      Q♦          7♦              \n",
+        "                                  \n",
+        "                                  \n",
+        "                                  \n",
+        "                                  \n",
+        "                                  \n",
+        "                                  \n",
+        "                                  \n",
+        "                                  \n",
+        "                                  \n",
+        "                                  \n",
+        "                                  \n"
+    );
+
+    helper::assert_move_succeeds(input, mv, reference);
+}
