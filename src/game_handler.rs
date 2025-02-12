@@ -1,7 +1,7 @@
+use rand::Rng;
+
 use crate::game::Game;
 use crate::r#move::{apply, Move};
-
-use rand::Rng;
 
 pub struct GameHandler {
     pub game: Option<Game>,

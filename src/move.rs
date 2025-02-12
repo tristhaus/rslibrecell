@@ -1,6 +1,7 @@
 use std::cmp::min;
 
-use crate::{card::Card, game::Game};
+use crate::card::Card;
+use crate::game::Game;
 
 pub enum Location {
     Cell { i: usize },
