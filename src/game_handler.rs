@@ -5,11 +5,15 @@ use crate::r#move::{apply, Move};
 
 pub struct GameHandler {
     pub game: Option<Game>,
+    history: Vec<Game>,
 }
 
 impl GameHandler {
     pub fn new() -> GameHandler {
-        GameHandler { game: None }
+        GameHandler {
+            game: None,
+            history: vec![],
+        }
     }
 
     pub fn game_from_id(&mut self, id: u16) {
@@ -29,11 +33,22 @@ impl GameHandler {
 
         match new_state {
             Ok(new_state) => {
+                self.history.push(self.game.as_mut().unwrap().clone());
                 self.game = Some(new_state);
                 return Ok(());
             }
             Err(()) => return Err(()),
         }
+    }
+
+    pub fn revert(&mut self) -> Result<(), ()> {
+        if self.history.is_empty() || self.game.as_ref().is_some_and(|x| x.is_won()) {
+            return Err(());
+        }
+
+        self.game = Some(self.history.pop().unwrap());
+
+        return Ok(());
     }
 }
 

@@ -561,4 +561,80 @@ fn gamehandler_make_move_go_through_entire_game() {
             to: Location::Column { i: 1 },
         })
         .is_err());
+
+    // no revert on won game
+    assert!(game_handler.revert().is_err())
+}
+
+#[test]
+fn gamehandler_revert_works_correctly() {
+    let mut game_handler = GameHandler::new();
+    game_handler.game_from_id(123);
+
+    let initial_reference = concat!(
+        "RustLibreCell                #123 \n",
+        "\n",
+        " ..  ..  ..  .. || ..  ..  ..  .. \n",
+        "--------------------------------- \n",
+        "  7♣  8♥  7♦  6♦  3♠  6♥  K♣  3♣  \n",
+        "  T♣  8♣  5♦  4♣  A♣  A♥  8♦  J♣  \n",
+        "  4♥  K♦  4♠  J♠  7♠  2♥  4♦  Q♥  \n",
+        "  2♠  T♥  T♠  7♥  5♠  9♠  2♣  6♠  \n",
+        "  A♦  8♠  6♣  K♥  Q♦  T♦  J♥  9♥  \n",
+        "  2♦  A♠  9♦  9♣  Q♠  5♥  J♦  K♠  \n",
+        "  Q♣  3♥  3♦  5♣                  \n",
+        "                                  \n",
+        "                                  \n",
+        "                                  \n",
+        "                                  \n",
+        "                                  \n",
+        "                                  \n",
+        "                                  \n",
+        "                                  \n",
+        "                                  \n",
+        "                                  \n",
+        "                                  \n",
+        "                                  \n",
+        ""
+    );
+
+    assert!(game_handler
+        .make_move(Move {
+            from: Location::Column { i: 6 },
+            to: Location::Column { i: 0 }
+        })
+        .is_ok());
+
+    assert!(game_handler
+        .make_move(Move {
+            from: Location::Column { i: 7 },
+            to: Location::Cell { i: 1 }
+        })
+        .is_ok());
+
+    assert!(game_handler.revert().is_ok());
+    assert!(game_handler.revert().is_ok());
+
+    let state = game_handler.game.as_ref().unwrap().to_string();
+
+    assert_eq!(initial_reference, state);
+}
+
+#[test]
+fn gamehandler_revert_errors_on_initial_state() {
+    let mut game_handler = GameHandler::new();
+    game_handler.game_from_id(123);
+
+    assert!(game_handler.revert().is_err());
+
+    assert!(game_handler
+        .make_move(Move {
+            from: Location::Column { i: 6 },
+            to: Location::Column { i: 0 }
+        })
+        .is_ok());
+
+    assert!(game_handler.revert().is_ok());
+
+    assert!(game_handler.revert().is_err());
 }
