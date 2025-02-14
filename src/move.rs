@@ -1,6 +1,6 @@
 use std::cmp::min;
 
-use crate::card::Card;
+use crate::card::{Card, Rank, Suit};
 use crate::game::Game;
 
 pub enum Location {
@@ -60,6 +60,111 @@ pub fn apply(game: &Game, mv: Move) -> Result<Game, ()> {
             Location::Column { i: to } => move_column_column(game, from, to),
         },
     }
+}
+
+pub fn automove(game: &Game) -> Option<Game> {
+    let check = |card: Card| -> bool {
+        if *card.rank() == Rank::Ace {
+            return true;
+        }
+
+        let own_foundation = &game.foundations[detail::find_foundation_for(*card.suit())];
+
+        if own_foundation.len() == 0
+            || *own_foundation.last().unwrap().rank() as i8 != *card.rank() as i8 - 1
+        {
+            return false;
+        }
+
+        let other_foundation_same_color = match *card.suit() {
+            Suit::Clubs => &game.foundations[detail::find_foundation_for(Suit::Spades)],
+            Suit::Diamonds => &game.foundations[detail::find_foundation_for(Suit::Hearts)],
+            Suit::Hearts => &game.foundations[detail::find_foundation_for(Suit::Diamonds)],
+            Suit::Spades => &game.foundations[detail::find_foundation_for(Suit::Clubs)],
+        };
+
+        let other_foundation_same_color_rank = match other_foundation_same_color.last() {
+            Some(card) => *card.rank() as i8,
+            None => -1 as i8,
+        };
+
+        let other_color_min_rank = match *card.suit() {
+            Suit::Clubs | Suit::Spades => {
+                let heart_rank =
+                    match &game.foundations[detail::find_foundation_for(Suit::Hearts)].last() {
+                        Some(card) => *card.rank() as i8,
+                        None => -1 as i8,
+                    };
+                let diamond_rank =
+                    match &game.foundations[detail::find_foundation_for(Suit::Diamonds)].last() {
+                        Some(card) => *card.rank() as i8,
+                        None => -1 as i8,
+                    };
+
+                min(heart_rank, diamond_rank)
+            }
+            Suit::Diamonds | Suit::Hearts => {
+                let club_rank =
+                    match &game.foundations[detail::find_foundation_for(Suit::Clubs)].last() {
+                        Some(card) => *card.rank() as i8,
+                        None => -1 as i8,
+                    };
+                let spade_rank =
+                    match &game.foundations[detail::find_foundation_for(Suit::Spades)].last() {
+                        Some(card) => *card.rank() as i8,
+                        None => -1 as i8,
+                    };
+
+                min(club_rank, spade_rank)
+            }
+        };
+
+        let own_foundation_rank = *own_foundation.last().unwrap().rank() as i8;
+
+        return (own_foundation_rank - other_color_min_rank < 2)
+            && (own_foundation_rank <= other_color_min_rank
+                || other_color_min_rank - other_foundation_same_color_rank < 2);
+    };
+
+    let game = game.clone();
+
+    for (i, column) in game.columns.iter().enumerate() {
+        let card = match column.last() {
+            Some(card) => card,
+            None => continue,
+        };
+
+        if !check(*card) {
+            continue;
+        }
+
+        let mv = Move {
+            from: Location::Column { i },
+            to: Location::Foundation,
+        };
+
+        return Some(apply(&game, mv).unwrap());
+    }
+
+    for (i, cell) in game.cells.iter().enumerate() {
+        let card = match cell {
+            Some(card) => card,
+            None => continue,
+        };
+
+        if !check(*card) {
+            continue;
+        }
+
+        let mv = Move {
+            from: Location::Cell { i },
+            to: Location::Foundation,
+        };
+
+        return Some(apply(&game, mv).unwrap());
+    }
+
+    return None;
 }
 
 fn move_cell_cell(game: &Game, from: usize, to: usize) -> Result<Game, ()> {
@@ -223,12 +328,7 @@ mod detail {
     };
 
     pub fn move_card_to_foundation(game: &mut Game, card: Card) -> Result<(), ()> {
-        let foundation = match card.suit() {
-            Suit::Clubs => 0 as usize,
-            Suit::Spades => 1 as usize,
-            Suit::Hearts => 2 as usize,
-            Suit::Diamonds => 3 as usize,
-        };
+        let foundation = find_foundation_for(*card.suit());
 
         let foundation = &mut game.foundations[foundation];
 
@@ -259,6 +359,17 @@ mod detail {
         }
 
         Ok(())
+    }
+
+    pub fn find_foundation_for(suit: Suit) -> usize {
+        let foundation = match suit {
+            Suit::Clubs => 0 as usize,
+            Suit::Spades => 1 as usize,
+            Suit::Hearts => 2 as usize,
+            Suit::Diamonds => 3 as usize,
+        };
+
+        return foundation;
     }
 
     pub fn fit_together(upper: &Card, lower: &Card) -> bool {

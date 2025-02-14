@@ -172,18 +172,6 @@ fn gamehandler_make_move_go_through_entire_game() {
         from: Location::Column { i: 6 },
         to: Location::Column { i: 4 },
     });
-
-    make_move_and_assert(Move {
-        // eventual automove
-        from: Location::Column { i: 6 },
-        to: Location::Foundation,
-    });
-    make_move_and_assert(Move {
-        // eventual automove
-        from: Location::Column { i: 0 },
-        to: Location::Foundation,
-    });
-
     make_move_and_assert(Move {
         from: Location::Column { i: 0 },
         to: Location::Foundation,
@@ -200,18 +188,6 @@ fn gamehandler_make_move_go_through_entire_game() {
         from: Location::Column { i: 0 },
         to: Location::Cell { i: 1 },
     });
-
-    make_move_and_assert(Move {
-        // eventual automove
-        from: Location::Column { i: 0 },
-        to: Location::Foundation,
-    });
-    make_move_and_assert(Move {
-        // eventual automove
-        from: Location::Column { i: 7 },
-        to: Location::Foundation,
-    });
-
     make_move_and_assert(Move {
         from: Location::Column { i: 6 },
         to: Location::Column { i: 0 },
@@ -232,49 +208,14 @@ fn gamehandler_make_move_go_through_entire_game() {
         from: Location::Column { i: 1 },
         to: Location::Column { i: 6 },
     });
-
     make_move_and_assert(Move {
         from: Location::Column { i: 7 },
         to: Location::Cell { i: 3 },
     });
-
-    make_move_and_assert(Move {
-        // eventual automove
-        from: Location::Column { i: 7 },
-        to: Location::Foundation,
-    });
-    make_move_and_assert(Move {
-        // eventual automove
-        from: Location::Column { i: 7 },
-        to: Location::Foundation,
-    });
-    make_move_and_assert(Move {
-        // eventual automove
-        from: Location::Column { i: 1 },
-        to: Location::Foundation,
-    });
-    make_move_and_assert(Move {
-        // eventual automove
-        from: Location::Cell { i: 2 },
-        to: Location::Foundation,
-    });
-
     make_move_and_assert(Move {
         from: Location::Column { i: 5 },
         to: Location::Column { i: 2 },
     });
-
-    make_move_and_assert(Move {
-        // eventual automove
-        from: Location::Column { i: 5 },
-        to: Location::Foundation,
-    });
-    make_move_and_assert(Move {
-        // eventual automove
-        from: Location::Column { i: 5 },
-        to: Location::Foundation,
-    });
-
     make_move_and_assert(Move {
         from: Location::Column { i: 3 },
         to: Location::Column { i: 5 },
@@ -283,44 +224,14 @@ fn gamehandler_make_move_go_through_entire_game() {
         from: Location::Column { i: 3 },
         to: Location::Cell { i: 2 },
     });
-
-    make_move_and_assert(Move {
-        // eventual automove
-        from: Location::Column { i: 3 },
-        to: Location::Foundation,
-    });
-    make_move_and_assert(Move {
-        // eventual automove
-        from: Location::Column { i: 3 },
-        to: Location::Foundation,
-    });
-    make_move_and_assert(Move {
-        // eventual automove
-        from: Location::Column { i: 4 },
-        to: Location::Foundation,
-    });
-    make_move_and_assert(Move {
-        // eventual automove
-        from: Location::Cell { i: 0 },
-        to: Location::Foundation,
-    });
-
     make_move_and_assert(Move {
         from: Location::Column { i: 4 },
         to: Location::Column { i: 7 },
     });
-
-    make_move_and_assert(Move {
-        // eventual automove
-        from: Location::Column { i: 4 },
-        to: Location::Foundation,
-    });
-
     make_move_and_assert(Move {
         from: Location::Column { i: 3 },
         to: Location::Column { i: 7 },
     });
-
     make_move_and_assert(Move {
         from: Location::Column { i: 4 },
         to: Location::Column { i: 7 },
@@ -357,199 +268,13 @@ fn gamehandler_make_move_go_through_entire_game() {
         from: Location::Column { i: 2 },
         to: Location::Cell { i: 3 },
     });
-
-    make_move_and_assert(Move {
-        // eventual automove
-        from: Location::Column { i: 2 },
-        to: Location::Foundation,
-    });
-    make_move_and_assert(Move {
-        // eventual automove
-        from: Location::Column { i: 2 },
-        to: Location::Foundation,
-    });
-    make_move_and_assert(Move {
-        // eventual automove
-        from: Location::Column { i: 7 },
-        to: Location::Foundation,
-    });
-    make_move_and_assert(Move {
-        // eventual automove
-        from: Location::Column { i: 0 },
-        to: Location::Foundation,
-    });
-    make_move_and_assert(Move {
-        // eventual automove
-        from: Location::Column { i: 3 },
-        to: Location::Foundation,
-    });
-
     make_move_and_assert(Move {
         from: Location::Column { i: 5 },
         to: Location::Column { i: 2 },
     });
-
-    make_move_and_assert(Move {
-        // eventual automove
-        from: Location::Column { i: 5 },
-        to: Location::Foundation,
-    });
-
     make_move_and_assert(Move {
         from: Location::Column { i: 1 },
         to: Location::Cell { i: 0 },
-    });
-
-    // automoves from here through the end of the test
-    make_move_and_assert(Move {
-        // eventual automove
-        from: Location::Column { i: 1 },
-        to: Location::Foundation,
-    });
-    make_move_and_assert(Move {
-        // eventual automove
-        from: Location::Column { i: 7 },
-        to: Location::Foundation,
-    });
-    make_move_and_assert(Move {
-        // eventual automove
-        from: Location::Column { i: 7 },
-        to: Location::Foundation,
-    });
-    make_move_and_assert(Move {
-        // eventual automove
-        from: Location::Cell { i: 3 },
-        to: Location::Foundation,
-    });
-    make_move_and_assert(Move {
-        // eventual automove
-        from: Location::Column { i: 3 },
-        to: Location::Foundation,
-    });
-    make_move_and_assert(Move {
-        // eventual automove
-        from: Location::Column { i: 0 },
-        to: Location::Foundation,
-    });
-    make_move_and_assert(Move {
-        // eventual automove
-        from: Location::Column { i: 3 },
-        to: Location::Foundation,
-    });
-    make_move_and_assert(Move {
-        // eventual automove
-        from: Location::Column { i: 0 },
-        to: Location::Foundation,
-    });
-    make_move_and_assert(Move {
-        // eventual automove
-        from: Location::Column { i: 7 },
-        to: Location::Foundation,
-    });
-    make_move_and_assert(Move {
-        // eventual automove
-        from: Location::Column { i: 4 },
-        to: Location::Foundation,
-    });
-    make_move_and_assert(Move {
-        // eventual automove
-        from: Location::Column { i: 7 },
-        to: Location::Foundation,
-    });
-    make_move_and_assert(Move {
-        // eventual automove
-        from: Location::Column { i: 4 },
-        to: Location::Foundation,
-    });
-    make_move_and_assert(Move {
-        // eventual automove
-        from: Location::Column { i: 0 },
-        to: Location::Foundation,
-    });
-    make_move_and_assert(Move {
-        // eventual automove
-        from: Location::Column { i: 3 },
-        to: Location::Foundation,
-    });
-    make_move_and_assert(Move {
-        // eventual automove
-        from: Location::Column { i: 0 },
-        to: Location::Foundation,
-    });
-    make_move_and_assert(Move {
-        // eventual automove
-        from: Location::Column { i: 1 },
-        to: Location::Foundation,
-    });
-    make_move_and_assert(Move {
-        // eventual automove
-        from: Location::Column { i: 1 },
-        to: Location::Foundation,
-    });
-    make_move_and_assert(Move {
-        // eventual automove
-        from: Location::Column { i: 7 },
-        to: Location::Foundation,
-    });
-    make_move_and_assert(Move {
-        // eventual automove
-        from: Location::Column { i: 6 },
-        to: Location::Foundation,
-    });
-    make_move_and_assert(Move {
-        // eventual automove
-        from: Location::Column { i: 1 },
-        to: Location::Foundation,
-    });
-    make_move_and_assert(Move {
-        // eventual automove
-        from: Location::Column { i: 0 },
-        to: Location::Foundation,
-    });
-    make_move_and_assert(Move {
-        // eventual automove
-        from: Location::Column { i: 2 },
-        to: Location::Foundation,
-    });
-    make_move_and_assert(Move {
-        // eventual automove
-        from: Location::Column { i: 3 },
-        to: Location::Foundation,
-    });
-    make_move_and_assert(Move {
-        // eventual automove
-        from: Location::Column { i: 0 },
-        to: Location::Foundation,
-    });
-    make_move_and_assert(Move {
-        // eventual automove
-        from: Location::Cell { i: 1 },
-        to: Location::Foundation,
-    });
-    make_move_and_assert(Move {
-        // eventual automove
-        from: Location::Column { i: 6 },
-        to: Location::Foundation,
-    });
-    make_move_and_assert(Move {
-        // eventual automove
-        from: Location::Column { i: 6 },
-        to: Location::Foundation,
-    });
-    make_move_and_assert(Move {
-        // eventual automove
-        from: Location::Cell { i: 0 },
-        to: Location::Foundation,
-    });
-    make_move_and_assert(Move {
-        // eventual automove
-        from: Location::Cell { i: 2 },
-        to: Location::Foundation,
-    });
-    make_move_and_assert(Move {
-        // eventual automove
-        from: Location::Column { i: 0 },
-        to: Location::Foundation,
     });
 
     assert!(game_handler.game.as_ref().unwrap().is_won());

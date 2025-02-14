@@ -1,7 +1,7 @@
 use rand::Rng;
 
 use crate::game::Game;
-use crate::r#move::{apply, Move};
+use crate::r#move::{apply, automove, Move};
 
 pub struct GameHandler {
     pub game: Option<Game>,
@@ -31,14 +31,26 @@ impl GameHandler {
 
         let new_state = apply(self.game.as_mut().unwrap(), mv);
 
-        match new_state {
-            Ok(new_state) => {
-                self.history.push(self.game.as_mut().unwrap().clone());
-                self.game = Some(new_state);
-                return Ok(());
-            }
-            Err(()) => return Err(()),
+        if let Err(()) = new_state {
+            return Err(());
         }
+
+        self.history.push(self.game.as_mut().unwrap().clone());
+
+        let mut new_state = new_state.unwrap();
+
+        loop {
+            let automoved = automove(&new_state);
+
+            if let Some(automoved) = automoved {
+                new_state = automoved
+            } else {
+                break;
+            }
+        }
+
+        self.game = Some(new_state);
+        return Ok(());
     }
 
     pub fn revert(&mut self) -> Result<(), ()> {
