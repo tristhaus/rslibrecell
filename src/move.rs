@@ -235,32 +235,13 @@ fn move_column_column(game: &Game, from: usize, to: usize) -> Result<Game, ()> {
         return Err(());
     }
 
-    let mut empty_column_count: u16 = game
-        .columns
-        .iter()
-        .map(|x| -> u16 {
-            match x.is_empty() {
-                true => return 1,
-                false => return 0,
-            }
-        })
-        .sum();
+    let mut empty_column_count: u16 = game.columns.iter().filter(|x| x.is_empty()).count() as u16;
     empty_column_count -= match game.columns[to].is_empty() {
         true => 1,
         false => 0,
     };
 
-    let empty_cell_count: u16 = game
-        .cells
-        .iter()
-        .map(|x| -> u16 {
-            match x.is_none() {
-                true => return 1,
-                false => return 0,
-            }
-        })
-        .sum();
-
+    let empty_cell_count: u16 = game.cells.iter().filter(|x| x.is_none()).count() as u16;
     let mut max_move_size = empty_cell_count + 1;
 
     for _i in 0..empty_column_count {

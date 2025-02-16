@@ -73,41 +73,37 @@ impl TryFrom<&str> for Game {
             Option::<Card>::None,
             Option::<Card>::None,
         ];
-        let mut foundations = [
-            Vec::<Card>::new(),
-            Vec::<Card>::new(),
-            Vec::<Card>::new(),
-            Vec::<Card>::new(),
-        ];
+        let mut foundations = [vec![], vec![], vec![], vec![]];
         let mut columns = [
-            Vec::<Card>::new(),
-            Vec::<Card>::new(),
-            Vec::<Card>::new(),
-            Vec::<Card>::new(),
-            Vec::<Card>::new(),
-            Vec::<Card>::new(),
-            Vec::<Card>::new(),
-            Vec::<Card>::new(),
+            vec![],
+            vec![],
+            vec![],
+            vec![],
+            vec![],
+            vec![],
+            vec![],
+            vec![],
         ];
 
         let mut check_set: collections::HashSet<Card> = collections::HashSet::<Card>::new();
 
-        let mut iter = value.lines();
+        let lines: Vec<&str> = value.lines().collect();
 
-        let title_line = match iter.next() {
-            Some(line) => line,
-            None => return Err(()),
-        };
+        if lines.len() < 5 {
+            return Err(());
+        }
 
-        let mut read_game_id = false;
+        let title_line = lines[0];
+
+        let mut read_pound_sign = false;
         let mut game_id = String::new();
         for c in title_line.chars() {
             if c == '#' {
-                read_game_id = true;
+                read_pound_sign = true;
                 continue;
             }
 
-            if read_game_id {
+            if read_pound_sign {
                 game_id.push(c);
             }
         }
@@ -117,12 +113,7 @@ impl TryFrom<&str> for Game {
             Err(_) => return Err(()),
         };
 
-        iter.next(); // skip empty line between title and cells || foundations
-
-        let cells_foundations_line = match iter.next() {
-            Some(line) => line,
-            None => return Err(()),
-        };
+        let cells_foundations_line = lines[2];
 
         let mut working_on_cells = true;
         let mut card_helper = String::new();
@@ -149,8 +140,8 @@ impl TryFrom<&str> for Game {
                     let cell_index = (index - 1) / 4;
                     cells[cell_index] = card;
 
-                    if card.is_some() {
-                        check_set.insert(card.unwrap());
+                    if card.is_some() && !check_set.insert(card.unwrap()) {
+                        return Err(());
                     }
                 } else {
                     if card.is_some() {
@@ -163,7 +154,9 @@ impl TryFrom<&str> for Game {
                             let id = r * 4 + *card.suit() as u8;
                             let foundation_card = Card::from_id(id);
                             foundations[foundation_index].push(foundation_card);
-                            check_set.insert(foundation_card);
+                            if !check_set.insert(foundation_card) {
+                                return Err(());
+                            }
                         }
                     }
                 }
@@ -172,14 +165,7 @@ impl TryFrom<&str> for Game {
             }
         }
 
-        iter.next(); // skip divider between "cells || foundations" and "columns"
-
-        loop {
-            let columns_line = match iter.next() {
-                Some(line) => line,
-                None => break,
-            };
-
+        for columns_line in &lines[4..] {
             for (index, ch) in columns_line.chars().enumerate() {
                 if ch == ' ' {
                     continue;
@@ -196,7 +182,9 @@ impl TryFrom<&str> for Game {
                     let card = card.unwrap();
                     let column_index = (index - 2) / 4;
                     columns[column_index].push(card);
-                    check_set.insert(card);
+                    if !check_set.insert(card) {
+                        return Err(());
+                    }
                     card_helper.clear();
                 }
             }
@@ -252,7 +240,7 @@ impl Game {
     }
 
     pub fn is_won(&self) -> bool {
-        let count: usize = self.foundations.iter().map(|x| x.len()).sum();
+        let count: usize = self.foundations.iter().fold(0, |acc, x| acc + x.len());
 
         count == 52
     }
