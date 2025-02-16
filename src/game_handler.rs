@@ -4,6 +4,7 @@ use crate::game::Game;
 use crate::r#move::{apply, automove, Move};
 
 /// A structure to hold a game and its history.
+#[derive(Default)]
 pub struct GameHandler {
     /// The current game in its current state, if any.
     pub game: Option<Game>,
@@ -11,14 +12,6 @@ pub struct GameHandler {
 }
 
 impl GameHandler {
-    /// Creates a new default instance.
-    pub fn new() -> GameHandler {
-        GameHandler {
-            game: None,
-            history: vec![],
-        }
-    }
-
     /// Replaces the currently held game and its history (if any)
     /// with the game defined by the given ID.
     pub fn game_from_id(&mut self, id: u16) {

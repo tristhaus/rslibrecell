@@ -4,7 +4,7 @@ use super::*;
 
 #[test]
 fn gamehandler_game_from_id_contains_expected() {
-    let mut game_handler = GameHandler::new();
+    let mut game_handler = GameHandler::default();
 
     assert!(game_handler.game.is_none());
 
@@ -25,7 +25,7 @@ fn gamehandler_game_from_id_contains_expected() {
 
 #[test]
 fn gamehandler_random_game_creates_different_game() {
-    let mut game_handler = GameHandler::new();
+    let mut game_handler = GameHandler::default();
     game_handler.game_from_id(1);
 
     assert!(game_handler
@@ -50,7 +50,7 @@ fn gamehandler_random_game_creates_different_game() {
 
 #[test]
 fn gamehandler_make_move_works_correctly() {
-    let mut game_handler = GameHandler::new();
+    let mut game_handler = GameHandler::default();
     game_handler.game_from_id(123);
 
     let initial = game_handler.game.as_ref().unwrap().to_string();
@@ -132,7 +132,7 @@ fn gamehandler_make_move_works_correctly() {
 
 #[test]
 fn gamehandler_make_move_rejects_illegal_move() {
-    let mut game_handler = GameHandler::new();
+    let mut game_handler = GameHandler::default();
     game_handler.game_from_id(123);
 
     assert!(game_handler
@@ -145,7 +145,7 @@ fn gamehandler_make_move_rejects_illegal_move() {
 
 #[test]
 fn gamehandler_make_move_go_through_entire_game() {
-    let mut game_handler = GameHandler::new();
+    let mut game_handler = GameHandler::default();
     game_handler.game_from_id(100);
 
     let mut make_move_and_assert = |mv: Move| {
@@ -293,7 +293,7 @@ fn gamehandler_make_move_go_through_entire_game() {
 
 #[test]
 fn gamehandler_revert_works_correctly() {
-    let mut game_handler = GameHandler::new();
+    let mut game_handler = GameHandler::default();
     game_handler.game_from_id(123);
 
     let initial_reference = concat!(
@@ -347,7 +347,7 @@ fn gamehandler_revert_works_correctly() {
 
 #[test]
 fn gamehandler_revert_errors_on_initial_state() {
-    let mut game_handler = GameHandler::new();
+    let mut game_handler = GameHandler::default();
     game_handler.game_from_id(123);
 
     assert!(game_handler.revert().is_err());
