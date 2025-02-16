@@ -3,17 +3,34 @@ use std::cmp::min;
 use crate::card::{Card, Rank, Suit};
 use crate::game::Game;
 
+/// Defines the `to` and `from` locations of a move.
 pub enum Location {
-    Cell { i: usize },
+    /// The location is a cell with some 0-based index.
+    Cell {
+        /// The 0-based index of the cell.
+        i: usize,
+    },
+    /// The location is the card-appropriate foundation.
     Foundation,
-    Column { i: usize },
+    /// The location is a column with some 0-based index.
+    Column {
+        /// The 0-based index of the column.
+        i: usize,
+    },
 }
 
+/// Defines a move for a game.
 pub struct Move {
+    /// The initial location of the card(s).
     pub from: Location,
+    /// The final location of the card(s).
     pub to: Location,
 }
 
+/// Applies a move to the game.
+/// 
+/// # Panics
+/// The method will only panic in case of an internal bug.
 pub fn apply(game: &Game, mv: Move) -> Result<Game, ()> {
     match mv.from {
         Location::Cell { i: from } => {
@@ -62,6 +79,14 @@ pub fn apply(game: &Game, mv: Move) -> Result<Game, ()> {
     }
 }
 
+/// Performs **one** automove, *i.e.* the moving of a card
+/// to its foundation if it definitely is no longer useful.
+/// 
+/// If an automove was performed, `Some` is returned, `None` otherwise.
+/// The rules for an automove are somewhat involved, but boil down to:
+/// > All cards that could be placed on the automoved card are
+/// > * already placed on a foundation or
+/// > * can be placed there, once accessible
 pub fn automove(game: &Game) -> Option<Game> {
     let check = |card: Card| -> bool {
         if *card.rank() == Rank::Ace {
@@ -167,6 +192,7 @@ pub fn automove(game: &Game) -> Option<Game> {
     return None;
 }
 
+// `from`, `to` are indices
 fn move_cell_cell(game: &Game, from: usize, to: usize) -> Result<Game, ()> {
     let mut game = game.clone();
 
@@ -176,6 +202,7 @@ fn move_cell_cell(game: &Game, from: usize, to: usize) -> Result<Game, ()> {
     return Ok(game);
 }
 
+// `from` is an index
 fn move_cell_foundation(game: &Game, from: usize) -> Result<Game, ()> {
     let card = game.cells[from].unwrap();
 
@@ -190,6 +217,7 @@ fn move_cell_foundation(game: &Game, from: usize) -> Result<Game, ()> {
     }
 }
 
+// `from`, `to` are indices
 fn move_cell_column(game: &Game, from: usize, to: usize) -> Result<Game, ()> {
     let lower = game.cells[from].unwrap();
 
@@ -208,6 +236,7 @@ fn move_cell_column(game: &Game, from: usize, to: usize) -> Result<Game, ()> {
     Ok(game)
 }
 
+// `from`, `to` are indices
 fn move_column_cell(game: &Game, from: usize, to: usize) -> Result<Game, ()> {
     let mut game = game.clone();
 
@@ -218,6 +247,7 @@ fn move_column_cell(game: &Game, from: usize, to: usize) -> Result<Game, ()> {
     return Ok(game);
 }
 
+// `from` is an index
 fn move_column_foundation(game: &Game, from: usize) -> Result<Game, ()> {
     let mut game = game.clone();
 
@@ -230,6 +260,7 @@ fn move_column_foundation(game: &Game, from: usize) -> Result<Game, ()> {
     }
 }
 
+// `from`, `to` are indices
 fn move_column_column(game: &Game, from: usize, to: usize) -> Result<Game, ()> {
     if from == to {
         return Err(());
@@ -353,6 +384,13 @@ mod detail {
         return foundation;
     }
 
+    /// Returns a flag indicating whether the two cards, with the lower card placed below 
+    /// the upper card on a column, will legally fit together.
+    /// 
+    /// Examples:
+    /// * upper `6♣`, lower `5♥` yields `true`
+    /// * upper `6♣`, lower `7♥` yields `false`
+    /// * upper `6♣`, lower `5♠` yields `false`
     pub fn fit_together(upper: &Card, lower: &Card) -> bool {
         if *upper.rank() == Rank::Ace {
             return false;

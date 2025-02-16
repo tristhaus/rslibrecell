@@ -1,20 +1,34 @@
 use std::convert::TryFrom;
 use std::fmt;
 
+/// The rank of a card.
 #[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]
 pub enum Rank {
+    /// Rank of ace, lowest.
     Ace = 0,
+    /// Rank of two.
     Two = 1,
+    /// Rank of three.
     Three = 2,
+    /// Rank of four.
     Four = 3,
+    /// Rank of five.
     Five = 4,
+    /// Rank of six.
     Six = 5,
+    /// Rank of seven.
     Seven = 6,
+    /// Rank of eight.
     Eight = 7,
+    /// Rank of nine.
     Nine = 8,
+    /// Rank of ten.
     Ten = 9,
+    /// Rank of jack.
     Jack = 10,
+    /// Rank of queen.
     Queen = 11,
+    /// Rank of king, highest.
     King = 12,
 }
 
@@ -41,11 +55,16 @@ impl TryFrom<u8> for Rank {
     }
 }
 
+/// The suit of a card.
 #[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]
 pub enum Suit {
+    /// Suit of clubs, ♣.
     Clubs = 0,
+    /// Suit of diamonds, ♦.
     Diamonds = 1,
+    /// Suit of hearts, ♥.
     Hearts = 2,
+    /// Suit of spades, ♠.
     Spades = 3,
 }
 
@@ -63,6 +82,9 @@ impl TryFrom<u8> for Suit {
     }
 }
 
+/// A card, represented through an internal ID, a suit and a rank.
+/// 
+/// A card is unique within a FreeCell game.
 #[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]
 pub struct Card {
     id: u8,
@@ -71,6 +93,10 @@ pub struct Card {
 }
 
 impl Card {
+    /// Creates a card from an ID.
+    /// 
+    /// # Panics
+    /// The method will panic if given an invalid `id > 51`.
     pub fn from_id(id: u8) -> Card {
         if id > 51 {
             panic!("`id` cannot be greater than 51, is: {id}")
@@ -82,14 +108,23 @@ impl Card {
         Card { id, rank, suit }
     }
 
+    /// Creates a card from its string representation.
+    /// 
+    /// The string representation must be a valid rank identifier
+    /// followed by a valid suit symbol, such as `"8♠"` or `"K♦"`.
+    /// 
+    /// # Panics
+    /// The method will panic if given an invalid string.
     pub fn from_str(representation: &str) -> Card {
         Card::try_from(representation).unwrap()
     }
 
+    /// Access the suit of the card instance.
     pub fn suit(&self) -> &Suit {
         &self.suit
     }
 
+    /// Access the rank of the card instance.
     pub fn rank(&self) -> &Rank {
         &self.rank
     }
@@ -127,6 +162,10 @@ impl fmt::Display for Card {
 impl TryFrom<&str> for Card {
     type Error = ();
 
+    /// Tries to create a card fomr its string representation.
+    /// 
+    /// The string representation must be a valid rank identifier
+    /// followed by a valid suit symbol, such as `"8♠"` or `"K♦"`.
     fn try_from(value: &str) -> Result<Self, Self::Error> {
         if value.len() < 3 {
             return Err(());

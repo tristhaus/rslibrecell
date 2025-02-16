@@ -1,3 +1,4 @@
+/// Contains a certain pseudo-random number generator.
 mod prng;
 
 use std::convert::TryFrom;
@@ -6,15 +7,22 @@ use std::{collections, fmt};
 use crate::card::Card;
 use crate::game::prng::Prng;
 
+/// Defines a FreeCell game.
 #[derive(Clone, Debug, PartialEq)]
 pub struct Game {
+    /// The ID of the game.
     pub id: u16,
+    /// The cells (top-left) of the game.
     pub cells: [Option<Card>; 4],
+    /// The foundations (top-right, target area) of the game.
     pub foundations: [Vec<Card>; 4],
+    /// The columns (bottom) of the game.
     pub columns: [Vec<Card>; 8],
 }
 
 impl fmt::Display for Game {
+    /// Provides the canonical representation of the game,
+    /// which should be parseable via `try_from`.
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let mut result = String::from("RustLibreCell              ");
 
@@ -66,6 +74,8 @@ impl fmt::Display for Game {
 impl TryFrom<&str> for Game {
     type Error = ();
 
+    /// Attempts to create a game from its canonical string representation,
+    /// compare `fmt`.
     fn try_from(value: &str) -> Result<Self, Self::Error> {
         let mut cells = [
             Option::<Card>::None,
@@ -204,6 +214,10 @@ impl TryFrom<&str> for Game {
 }
 
 impl Game {
+    /// Generates the game associated with the given ID.
+    ///
+    /// # Panics
+    /// The method will panic if the underlying code, especially the PRNG, panics.
     pub fn from_id(id: u16) -> Game {
         let mut prng = Prng { state: id as u32 };
 
@@ -239,6 +253,8 @@ impl Game {
         return game;
     }
 
+    /// Returns a flag indicating whether the game is won,
+    /// *i.e.* all cards are on the foundations.
     pub fn is_won(&self) -> bool {
         let count: usize = self.foundations.iter().fold(0, |acc, x| acc + x.len());
 
