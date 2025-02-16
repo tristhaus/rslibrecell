@@ -42,7 +42,7 @@ mod helper {
 #[test]
 fn apply_cell_cell_works() {
     let input = concat!(
-        "RustLibreCell                 #42\n",
+        "RustLibreCell                 #42 \n",
         "\n",
         " T♣  ..  ..  Q♥ || 2♣  ..  A♥  2♦ \n",
         "--------------------------------- \n",
@@ -72,7 +72,7 @@ fn apply_cell_cell_works() {
     };
 
     let reference = concat!(
-        "RustLibreCell                 #42\n",
+        "RustLibreCell                 #42 \n",
         "\n",
         " T♣  ..  Q♥  .. || 2♣  ..  A♥  2♦ \n",
         "--------------------------------- \n",
@@ -102,7 +102,7 @@ fn apply_cell_cell_works() {
 #[test]
 fn apply_cannot_move_from_nonexistent_cell() {
     let input = concat!(
-        "RustLibreCell                 #42\n",
+        "RustLibreCell                 #42 \n",
         "\n",
         " T♣  ..  ..  Q♥ || 2♣  ..  A♥  2♦ \n",
         "--------------------------------- \n",
@@ -137,7 +137,7 @@ fn apply_cannot_move_from_nonexistent_cell() {
 #[test]
 fn apply_cannot_move_to_nonexistent_cell() {
     let input = concat!(
-        "RustLibreCell                 #42\n",
+        "RustLibreCell                 #42 \n",
         "\n",
         " T♣  ..  ..  Q♥ || 2♣  ..  A♥  2♦ \n",
         "--------------------------------- \n",
@@ -172,7 +172,7 @@ fn apply_cannot_move_to_nonexistent_cell() {
 #[test]
 fn apply_cannot_move_to_full_cell() {
     let input = concat!(
-        "RustLibreCell                 #42\n",
+        "RustLibreCell                 #42 \n",
         "\n",
         " T♣  ..  ..  Q♥ || 2♣  ..  A♥  2♦ \n",
         "--------------------------------- \n",
@@ -207,7 +207,7 @@ fn apply_cannot_move_to_full_cell() {
 #[test]
 fn apply_cannot_move_from_empty_cell() {
     let input = concat!(
-        "RustLibreCell                 #42\n",
+        "RustLibreCell                 #42 \n",
         "\n",
         " T♣  ..  ..  Q♥ || 2♣  ..  A♥  2♦ \n",
         "--------------------------------- \n",
@@ -242,7 +242,7 @@ fn apply_cannot_move_from_empty_cell() {
 #[test]
 fn apply_cell_foundation_ace_works() {
     let input = concat!(
-        "RustLibreCell                 #42\n",
+        "RustLibreCell                 #42 \n",
         "\n",
         " T♣  A♥  2♦  Q♥ || 2♣  ..  ..  A♦ \n",
         "--------------------------------- \n",
@@ -272,7 +272,7 @@ fn apply_cell_foundation_ace_works() {
     };
 
     let reference = concat!(
-        "RustLibreCell                 #42\n",
+        "RustLibreCell                 #42 \n",
         "\n",
         " T♣  ..  2♦  Q♥ || 2♣  ..  A♥  A♦ \n",
         "--------------------------------- \n",
@@ -302,7 +302,7 @@ fn apply_cell_foundation_ace_works() {
 #[test]
 fn apply_cell_foundation_two_works() {
     let input = concat!(
-        "RustLibreCell                 #42\n",
+        "RustLibreCell                 #42 \n",
         "\n",
         " T♣  ..  2♦  Q♥ || 2♣  ..  A♥  A♦ \n",
         "--------------------------------- \n",
@@ -332,7 +332,7 @@ fn apply_cell_foundation_two_works() {
     };
 
     let reference = concat!(
-        "RustLibreCell                 #42\n",
+        "RustLibreCell                 #42 \n",
         "\n",
         " T♣  ..  ..  Q♥ || 2♣  ..  A♥  2♦ \n",
         "--------------------------------- \n",
@@ -362,7 +362,7 @@ fn apply_cell_foundation_two_works() {
 #[test]
 fn apply_cannot_move_from_foundation() {
     let input = concat!(
-        "RustLibreCell                 #42\n",
+        "RustLibreCell                 #42 \n",
         "\n",
         " T♣  ..  ..  Q♥ || 2♣  ..  A♥  2♦ \n",
         "--------------------------------- \n",
@@ -397,7 +397,7 @@ fn apply_cannot_move_from_foundation() {
 #[test]
 fn apply_cell_to_foundation_without_correct_rank_fails() {
     let input = concat!(
-        "RustLibreCell                 #42\n",
+        "RustLibreCell                 #42 \n",
         "\n",
         " T♣  3♥  ..  Q♥ || 2♣  ..  A♥  2♦ \n",
         "--------------------------------- \n",
@@ -432,7 +432,7 @@ fn apply_cell_to_foundation_without_correct_rank_fails() {
 #[test]
 fn apply_column_cell_works() {
     let input = concat!(
-        "RustLibreCell                 #42\n",
+        "RustLibreCell                 #42 \n",
         "\n",
         " T♣  ..  ..  Q♥ || 2♣  ..  A♥  2♦ \n",
         "--------------------------------- \n",
@@ -462,7 +462,7 @@ fn apply_column_cell_works() {
     };
 
     let reference = concat!(
-        "RustLibreCell                 #42\n",
+        "RustLibreCell                 #42 \n",
         "\n",
         " T♣  4♦  ..  Q♥ || 2♣  ..  A♥  2♦ \n",
         "--------------------------------- \n",
@@ -492,7 +492,7 @@ fn apply_column_cell_works() {
 #[test]
 fn apply_cannot_move_from_nonexistent_column() {
     let input = concat!(
-        "RustLibreCell                 #42\n",
+        "RustLibreCell                 #42 \n",
         "\n",
         " T♣  ..  ..  Q♥ || 2♣  ..  A♥  2♦ \n",
         "--------------------------------- \n",
@@ -527,7 +527,7 @@ fn apply_cannot_move_from_nonexistent_column() {
 #[test]
 fn apply_cannot_move_to_nonexistent_column() {
     let input = concat!(
-        "RustLibreCell                 #42\n",
+        "RustLibreCell                 #42 \n",
         "\n",
         " T♣  ..  ..  Q♥ || 2♣  ..  A♥  2♦ \n",
         "--------------------------------- \n",
@@ -562,7 +562,7 @@ fn apply_cannot_move_to_nonexistent_column() {
 #[test]
 fn apply_cannot_move_from_empty_column() {
     let input = concat!(
-        "RustLibreCell                 #42\n",
+        "RustLibreCell                 #42 \n",
         "\n",
         " T♣  ..  ..  Q♥ || 2♣  ..  A♥  2♦ \n",
         "--------------------------------- \n",
@@ -597,7 +597,7 @@ fn apply_cannot_move_from_empty_column() {
 #[test]
 fn apply_column_foundation_ace_works() {
     let input = concat!(
-        "RustLibreCell                 #42\n",
+        "RustLibreCell                 #42 \n",
         "\n",
         " T♣  ..  2♦  Q♥ || 2♣  ..  ..  A♦ \n",
         "--------------------------------- \n",
@@ -627,7 +627,7 @@ fn apply_column_foundation_ace_works() {
     };
 
     let reference = concat!(
-        "RustLibreCell                 #42\n",
+        "RustLibreCell                 #42 \n",
         "\n",
         " T♣  ..  2♦  Q♥ || 2♣  ..  A♥  A♦ \n",
         "--------------------------------- \n",
@@ -657,7 +657,7 @@ fn apply_column_foundation_ace_works() {
 #[test]
 fn apply_column_foundation_two_works() {
     let input = concat!(
-        "RustLibreCell                 #42\n",
+        "RustLibreCell                 #42 \n",
         "\n",
         " T♣  ..  ..  Q♥ || 2♣  ..  A♥  A♦ \n",
         "--------------------------------- \n",
@@ -687,7 +687,7 @@ fn apply_column_foundation_two_works() {
     };
 
     let reference = concat!(
-        "RustLibreCell                 #42\n",
+        "RustLibreCell                 #42 \n",
         "\n",
         " T♣  ..  ..  Q♥ || 2♣  ..  A♥  2♦ \n",
         "--------------------------------- \n",
@@ -717,7 +717,7 @@ fn apply_column_foundation_two_works() {
 #[test]
 fn apply_column_to_foundation_without_correct_rank_fails() {
     let input = concat!(
-        "RustLibreCell                 #42\n",
+        "RustLibreCell                 #42 \n",
         "\n",
         " T♣  ..  ..  Q♥ || 2♣  ..  A♥  2♦ \n",
         "--------------------------------- \n",
@@ -752,7 +752,7 @@ fn apply_column_to_foundation_without_correct_rank_fails() {
 #[test]
 fn apply_column_to_same_column_fails() {
     let input = concat!(
-        "RustLibreCell                 #42\n",
+        "RustLibreCell                 #42 \n",
         "\n",
         " T♣  ..  ..  Q♥ || 2♣  ..  A♥  2♦ \n",
         "--------------------------------- \n",
@@ -787,7 +787,7 @@ fn apply_column_to_same_column_fails() {
 #[test]
 fn apply_cell_to_empty_column_works() {
     let input = concat!(
-        "RustLibreCell                 #42\n",
+        "RustLibreCell                 #42 \n",
         "\n",
         " T♣  ..  ..  Q♥ || 2♣  ..  A♥  2♦ \n",
         "--------------------------------- \n",
@@ -817,7 +817,7 @@ fn apply_cell_to_empty_column_works() {
     };
 
     let reference = concat!(
-        "RustLibreCell                 #42\n",
+        "RustLibreCell                 #42 \n",
         "\n",
         " ..  ..  ..  Q♥ || 2♣  ..  A♥  2♦ \n",
         "--------------------------------- \n",
@@ -847,7 +847,7 @@ fn apply_cell_to_empty_column_works() {
 #[test]
 fn apply_cell_to_filled_matching_column_works() {
     let input = concat!(
-        "RustLibreCell                 #42\n",
+        "RustLibreCell                 #42 \n",
         "\n",
         " T♣  ..  3♥  Q♥ || 2♣  ..  A♥  2♦ \n",
         "--------------------------------- \n",
@@ -877,7 +877,7 @@ fn apply_cell_to_filled_matching_column_works() {
     };
 
     let reference = concat!(
-        "RustLibreCell                 #42\n",
+        "RustLibreCell                 #42 \n",
         "\n",
         " T♣  ..  ..  Q♥ || 2♣  ..  A♥  2♦ \n",
         "--------------------------------- \n",
@@ -907,7 +907,7 @@ fn apply_cell_to_filled_matching_column_works() {
 #[test]
 fn apply_cell_to_filled_nonmatching_column_fails() {
     let input = concat!(
-        "RustLibreCell                 #42\n",
+        "RustLibreCell                 #42 \n",
         "\n",
         " T♣  ..  ..  Q♥ || 2♣  ..  A♥  2♦ \n",
         "--------------------------------- \n",
@@ -942,7 +942,7 @@ fn apply_cell_to_filled_nonmatching_column_fails() {
 #[test]
 fn apply_column_one_card_to_column_empty_moves_one_card() {
     let input = concat!(
-        "RustLibreCell                 #42\n",
+        "RustLibreCell                 #42 \n",
         "\n",
         " T♣  2♠  4♥  Q♥ || 2♣  ..  A♥  2♦ \n",
         "--------------------------------- \n",
@@ -972,7 +972,7 @@ fn apply_column_one_card_to_column_empty_moves_one_card() {
     };
 
     let reference = concat!(
-        "RustLibreCell                 #42\n",
+        "RustLibreCell                 #42 \n",
         "\n",
         " T♣  2♠  4♥  Q♥ || 2♣  ..  A♥  2♦ \n",
         "--------------------------------- \n",
@@ -1002,7 +1002,7 @@ fn apply_column_one_card_to_column_empty_moves_one_card() {
 #[test]
 fn apply_column_three_cards_to_column_empty_moves_one_card() {
     let input = concat!(
-        "RustLibreCell                 #42\n",
+        "RustLibreCell                 #42 \n",
         "\n",
         " T♣  2♠  4♥  Q♥ || 2♣  ..  A♥  2♦ \n",
         "--------------------------------- \n",
@@ -1032,7 +1032,7 @@ fn apply_column_three_cards_to_column_empty_moves_one_card() {
     };
 
     let reference = concat!(
-        "RustLibreCell                 #42\n",
+        "RustLibreCell                 #42 \n",
         "\n",
         " T♣  2♠  4♥  Q♥ || 2♣  ..  A♥  2♦ \n",
         "--------------------------------- \n",
@@ -1062,7 +1062,7 @@ fn apply_column_three_cards_to_column_empty_moves_one_card() {
 #[test]
 fn apply_column_one_to_column_filled_matching_moves_one_card() {
     let input = concat!(
-        "RustLibreCell                 #42\n",
+        "RustLibreCell                 #42 \n",
         "\n",
         " T♣  2♠  4♥  Q♥ || 2♣  ..  A♥  2♦ \n",
         "--------------------------------- \n",
@@ -1092,7 +1092,7 @@ fn apply_column_one_to_column_filled_matching_moves_one_card() {
     };
 
     let reference = concat!(
-        "RustLibreCell                 #42\n",
+        "RustLibreCell                 #42 \n",
         "\n",
         " T♣  2♠  4♥  Q♥ || 2♣  ..  A♥  2♦ \n",
         "--------------------------------- \n",
@@ -1122,7 +1122,7 @@ fn apply_column_one_to_column_filled_matching_moves_one_card() {
 #[test]
 fn apply_column_to_filled_nonmatching_column_fails() {
     let input = concat!(
-        "RustLibreCell                 #42\n",
+        "RustLibreCell                 #42 \n",
         "\n",
         " T♣  2♠  4♥  Q♥ || 2♣  ..  A♥  2♦ \n",
         "--------------------------------- \n",
@@ -1157,7 +1157,7 @@ fn apply_column_to_filled_nonmatching_column_fails() {
 #[test]
 fn apply_column_seven_to_column_empty_supermoves_two_cards() {
     let input = concat!(
-        "RustLibreCell                 #42\n",
+        "RustLibreCell                 #42 \n",
         "\n",
         " T♣  2♠  ..  Q♥ || 2♣  ..  A♥  2♦ \n",
         "--------------------------------- \n",
@@ -1187,7 +1187,7 @@ fn apply_column_seven_to_column_empty_supermoves_two_cards() {
     };
 
     let reference = concat!(
-        "RustLibreCell                 #42\n",
+        "RustLibreCell                 #42 \n",
         "\n",
         " T♣  2♠  ..  Q♥ || 2♣  ..  A♥  2♦ \n",
         "--------------------------------- \n",
@@ -1217,7 +1217,7 @@ fn apply_column_seven_to_column_empty_supermoves_two_cards() {
 #[test]
 fn apply_column_four_to_column_filled_matching_supermoves_four_cards() {
     let input = concat!(
-        "RustLibreCell                 #42\n",
+        "RustLibreCell                 #42 \n",
         "\n",
         " T♣  2♠  ..  Q♥ || 2♣  ..  A♥  2♦ \n",
         "--------------------------------- \n",
@@ -1247,7 +1247,7 @@ fn apply_column_four_to_column_filled_matching_supermoves_four_cards() {
     };
 
     let reference = concat!(
-        "RustLibreCell                 #42\n",
+        "RustLibreCell                 #42 \n",
         "\n",
         " T♣  2♠  ..  Q♥ || 2♣  ..  A♥  2♦ \n",
         "--------------------------------- \n",
@@ -1277,7 +1277,7 @@ fn apply_column_four_to_column_filled_matching_supermoves_four_cards() {
 #[test]
 fn apply_column_six_to_column_filled_matching_supermoves_six_cards() {
     let input = concat!(
-        "RustLibreCell                 #42\n",
+        "RustLibreCell                 #42 \n",
         "\n",
         " T♣  ..  ..  Q♥ || 2♣  ..  A♥  2♦ \n",
         "--------------------------------- \n",
@@ -1307,7 +1307,7 @@ fn apply_column_six_to_column_filled_matching_supermoves_six_cards() {
     };
 
     let reference = concat!(
-        "RustLibreCell                 #42\n",
+        "RustLibreCell                 #42 \n",
         "\n",
         " T♣  ..  ..  Q♥ || 2♣  ..  A♥  2♦ \n",
         "--------------------------------- \n",
@@ -1337,7 +1337,7 @@ fn apply_column_six_to_column_filled_matching_supermoves_six_cards() {
 #[test]
 fn apply_column_six_to_column_filled_matching_fails_run_too_large() {
     let input = concat!(
-        "RustLibreCell                 #42\n",
+        "RustLibreCell                 #42 \n",
         "\n",
         " T♣  2♠  ..  Q♥ || 2♣  ..  A♥  2♦ \n",
         "--------------------------------- \n",
@@ -1372,7 +1372,7 @@ fn apply_column_six_to_column_filled_matching_fails_run_too_large() {
 #[test]
 fn apply_column_three_to_column_filled_nonmatching_fails() {
     let input = concat!(
-        "RustLibreCell                 #42\n",
+        "RustLibreCell                 #42 \n",
         "\n",
         " ..  ..  ..  Q♥ || 2♣  ..  A♥  2♦ \n",
         "--------------------------------- \n",
@@ -1407,7 +1407,7 @@ fn apply_column_three_to_column_filled_nonmatching_fails() {
 #[test]
 fn apply_column_six_to_column_filled_matching_supermoves_six_cards_using_multiple_columns() {
     let input = concat!(
-        "RustLibreCell                 #42\n",
+        "RustLibreCell                 #42 \n",
         "\n",
         " T♣  2♦  ..  Q♥ || 2♣  ..  A♥  A♦ \n",
         "--------------------------------- \n",
@@ -1437,7 +1437,7 @@ fn apply_column_six_to_column_filled_matching_supermoves_six_cards_using_multipl
     };
 
     let reference = concat!(
-        "RustLibreCell                 #42\n",
+        "RustLibreCell                 #42 \n",
         "\n",
         " T♣  2♦  ..  Q♥ || 2♣  ..  A♥  A♦ \n",
         "--------------------------------- \n",
@@ -1467,7 +1467,7 @@ fn apply_column_six_to_column_filled_matching_supermoves_six_cards_using_multipl
 #[test]
 fn apply_column_five_to_column_filled_matching_supermoves_four_cards_to_match() {
     let input = concat!(
-        "RustLibreCell                 #42\n",
+        "RustLibreCell                 #42 \n",
         "\n",
         " T♣  2♠  ..  Q♥ || 2♣  ..  A♥  2♦ \n",
         "--------------------------------- \n",
@@ -1497,7 +1497,7 @@ fn apply_column_five_to_column_filled_matching_supermoves_four_cards_to_match() 
     };
 
     let reference = concat!(
-        "RustLibreCell                 #42\n",
+        "RustLibreCell                 #42 \n",
         "\n",
         " T♣  2♠  ..  Q♥ || 2♣  ..  A♥  2♦ \n",
         "--------------------------------- \n",
@@ -1527,7 +1527,7 @@ fn apply_column_five_to_column_filled_matching_supermoves_four_cards_to_match() 
 #[test]
 fn apply_column_three_to_column_empty_supermoves_three_cards_cells_only() {
     let input = concat!(
-        "RustLibreCell                 #42\n",
+        "RustLibreCell                 #42 \n",
         "\n",
         " T♣  ..  ..  Q♥ || 2♣  ..  A♥  2♦ \n",
         "--------------------------------- \n",
@@ -1557,7 +1557,7 @@ fn apply_column_three_to_column_empty_supermoves_three_cards_cells_only() {
     };
 
     let reference = concat!(
-        "RustLibreCell                 #42\n",
+        "RustLibreCell                 #42 \n",
         "\n",
         " T♣  ..  ..  Q♥ || 2♣  ..  A♥  2♦ \n",
         "--------------------------------- \n",
@@ -1587,7 +1587,7 @@ fn apply_column_three_to_column_empty_supermoves_three_cards_cells_only() {
 #[test]
 fn apply_column_five_to_column_filled_matching_supermoves_four_cards_columns_only() {
     let input = concat!(
-        "RustLibreCell                 #42\n",
+        "RustLibreCell                 #42 \n",
         "\n",
         " T♣  2♠  5♣  Q♥ || 2♣  ..  A♥  2♦ \n",
         "--------------------------------- \n",
@@ -1617,7 +1617,7 @@ fn apply_column_five_to_column_filled_matching_supermoves_four_cards_columns_onl
     };
 
     let reference = concat!(
-        "RustLibreCell                 #42\n",
+        "RustLibreCell                 #42 \n",
         "\n",
         " T♣  2♠  5♣  Q♥ || 2♣  ..  A♥  2♦ \n",
         "--------------------------------- \n",
@@ -1647,7 +1647,7 @@ fn apply_column_five_to_column_filled_matching_supermoves_four_cards_columns_onl
 #[test]
 fn apply_column_six_to_column_filled_matching_supermoves_three_cards_involving_an_ace() {
     let input = concat!(
-        "RustLibreCell                #100\n",
+        "RustLibreCell                #100 \n",
         "\n",
         " 5♦  ..  ..  .. || ..  ..  ..  .. \n",
         "--------------------------------- \n",
@@ -1678,7 +1678,7 @@ fn apply_column_six_to_column_filled_matching_supermoves_three_cards_involving_a
     };
 
     let reference = concat!(
-        "RustLibreCell                #100\n",
+        "RustLibreCell                #100 \n",
         "\n",
         " 5♦  ..  ..  .. || ..  ..  ..  .. \n",
         "--------------------------------- \n",
@@ -1709,7 +1709,7 @@ fn apply_column_six_to_column_filled_matching_supermoves_three_cards_involving_a
 #[test]
 fn ace_of_hearts_should_be_auto_moved_from_cell() {
     let input = concat!(
-        "RustLibreCell                #100\n",
+        "RustLibreCell                #100 \n",
         "\n",
         " ..  A♥  ..  .. || 2♣  ..  ..  .. \n",
         "--------------------------------- \n",
@@ -1729,7 +1729,7 @@ fn ace_of_hearts_should_be_auto_moved_from_cell() {
     let count = 1;
 
     let reference = concat!(
-        "RustLibreCell                #100\n",
+        "RustLibreCell                #100 \n",
         "\n",
         " ..  ..  ..  .. || 2♣  ..  A♥  .. \n",
         "--------------------------------- \n",
@@ -1752,7 +1752,7 @@ fn ace_of_hearts_should_be_auto_moved_from_cell() {
 #[test]
 fn ace_of_hearts_should_be_auto_moved_from_column() {
     let input = concat!(
-        "RustLibreCell                #100\n",
+        "RustLibreCell                #100 \n",
         "\n",
         "..  ..  ..  .. || 2♣  ..  ..  .. \n",
         "-------------------------------- \n",
@@ -1772,7 +1772,7 @@ fn ace_of_hearts_should_be_auto_moved_from_column() {
     let count = 1;
 
     let reference = concat!(
-        "RustLibreCell                #100\n",
+        "RustLibreCell                #100 \n",
         "\n",
         "..  ..  ..  .. || 2♣  ..  A♥  .. \n",
         "-------------------------------- \n",
@@ -1795,7 +1795,7 @@ fn ace_of_hearts_should_be_auto_moved_from_column() {
 #[test]
 fn two_of_clubs_should_be_auto_moved_from_cell() {
     let input = concat!(
-        "RustLibreCell                #100\n",
+        "RustLibreCell                #100 \n",
         "\n",
         "..  ..  ..  2♣ || A♣  ..  ..  .. \n",
         "-------------------------------- \n",
@@ -1815,7 +1815,7 @@ fn two_of_clubs_should_be_auto_moved_from_cell() {
     let count = 1;
 
     let reference = concat!(
-        "RustLibreCell                #100\n",
+        "RustLibreCell                #100 \n",
         "\n",
         "..  ..  ..  .. || 2♣  ..  ..  .. \n",
         "-------------------------------- \n",
@@ -1838,7 +1838,7 @@ fn two_of_clubs_should_be_auto_moved_from_cell() {
 #[test]
 fn two_of_clubs_should_be_auto_moved_from_column() {
     let input = concat!(
-        "RustLibreCell                #100\n",
+        "RustLibreCell                #100 \n",
         "\n",
         "..  ..  ..  .. || A♣  ..  ..  .. \n",
         "-------------------------------- \n",
@@ -1858,7 +1858,7 @@ fn two_of_clubs_should_be_auto_moved_from_column() {
     let count = 1;
 
     let reference = concat!(
-        "RustLibreCell                #100\n",
+        "RustLibreCell                #100 \n",
         "\n",
         "..  ..  ..  .. || 2♣  ..  ..  .. \n",
         "-------------------------------- \n",
@@ -1881,7 +1881,7 @@ fn two_of_clubs_should_be_auto_moved_from_column() {
 #[test]
 fn three_of_clubs_should_not_be_auto_moved_from_cell() {
     let input = concat!(
-        "RustLibreCell                #100\n",
+        "RustLibreCell                #100 \n",
         "\n",
         "..  ..  3♣  .. || 2♣  ..  ..  .. \n",
         "-------------------------------- \n",
@@ -1906,7 +1906,7 @@ fn three_of_clubs_should_not_be_auto_moved_from_cell() {
 #[test]
 fn three_of_clubs_should_not_be_auto_moved_from_column() {
     let input = concat!(
-        "RustLibreCell                #100\n",
+        "RustLibreCell                #100 \n",
         "\n",
         "..  ..  ..  .. || 2♣  ..  ..  .. \n",
         "-------------------------------- \n",
@@ -1931,7 +1931,7 @@ fn three_of_clubs_should_not_be_auto_moved_from_column() {
 #[test]
 fn four_of_diamonds_should_not_be_auto_moved_from_cell() {
     let input = concat!(
-        "RustLibreCell                #100\n",
+        "RustLibreCell                #100 \n",
         "\n",
         "..  4♦  ..  .. || ..  2♠  ..  3♦ \n",
         "-------------------------------- \n",
@@ -1956,7 +1956,7 @@ fn four_of_diamonds_should_not_be_auto_moved_from_cell() {
 #[test]
 fn four_of_diamonds_should_not_be_auto_moved_from_column() {
     let input = concat!(
-        "RustLibreCell                #100\n",
+        "RustLibreCell                #100 \n",
         "\n",
         "..  ..  ..  .. || ..  2♠  ..  3♦ \n",
         "-------------------------------- \n",
@@ -1981,7 +1981,7 @@ fn four_of_diamonds_should_not_be_auto_moved_from_column() {
 #[test]
 fn four_of_clubs_should_be_auto_moved_from_cell() {
     let input = concat!(
-        "RustLibreCell                #100\n",
+        "RustLibreCell                #100 \n",
         "\n",
         "..  4♣  ..  .. || 3♣  A♠  2♥  2♦ \n",
         "-------------------------------- \n",
@@ -2001,7 +2001,7 @@ fn four_of_clubs_should_be_auto_moved_from_cell() {
     let count = 1;
 
     let reference = concat!(
-        "RustLibreCell                #100\n",
+        "RustLibreCell                #100 \n",
         "\n",
         "..  ..  ..  .. || 4♣  A♠  2♥  2♦ \n",
         "-------------------------------- \n",
@@ -2024,7 +2024,7 @@ fn four_of_clubs_should_be_auto_moved_from_cell() {
 #[test]
 fn four_of_clubs_should_be_auto_moved_from_column() {
     let input = concat!(
-        "RustLibreCell                #100\n",
+        "RustLibreCell                #100 \n",
         "\n",
         "..  ..  ..  .. || 3♣  A♠  2♥  2♦ \n",
         "-------------------------------- \n",
@@ -2044,7 +2044,7 @@ fn four_of_clubs_should_be_auto_moved_from_column() {
     let count = 1;
 
     let reference = concat!(
-        "RustLibreCell                #100\n",
+        "RustLibreCell                #100 \n",
         "\n",
         "..  ..  ..  .. || 4♣  A♠  2♥  2♦ \n",
         "-------------------------------- \n",
@@ -2067,7 +2067,7 @@ fn four_of_clubs_should_be_auto_moved_from_column() {
 #[test]
 fn four_of_clubs_should_not_be_auto_moved_from_cell() {
     let input = concat!(
-        "RustLibreCell                #100\n",
+        "RustLibreCell                #100 \n",
         "\n",
         "..  4♣  ..  .. || 3♣  ..  2♥  2♦ \n",
         "-------------------------------- \n",
@@ -2092,7 +2092,7 @@ fn four_of_clubs_should_not_be_auto_moved_from_cell() {
 #[test]
 fn four_of_clubs_should_not_be_auto_moved_from_column() {
     let input = concat!(
-        "RustLibreCell                #100\n",
+        "RustLibreCell                #100 \n",
         "\n",
         "..  ..  ..  .. || 3♣  ..  2♥  2♦ \n",
         "-------------------------------- \n",
@@ -2117,7 +2117,7 @@ fn four_of_clubs_should_not_be_auto_moved_from_column() {
 #[test]
 fn ten_of_clubs_should_not_be_auto_moved_from_cell() {
     let input = concat!(
-        "RustLibreCell                #100\n",
+        "RustLibreCell                #100 \n",
         "\n",
         "..  ..  T♣  .. || 9♣  6♠  8♥  8♦ \n",
         "-------------------------------- \n",
@@ -2137,7 +2137,7 @@ fn ten_of_clubs_should_not_be_auto_moved_from_cell() {
 #[test]
 fn ten_of_clubs_should_not_be_auto_moved_from_column() {
     let input = concat!(
-        "RustLibreCell                #100\n",
+        "RustLibreCell                #100 \n",
         "\n",
         "..  ..  ..  .. || 9♣  6♠  8♥  8♦ \n",
         "-------------------------------- \n",
@@ -2157,7 +2157,7 @@ fn ten_of_clubs_should_not_be_auto_moved_from_column() {
 #[test]
 fn ten_of_clubs_should_be_auto_moved_from_cell() {
     let input = concat!(
-        "RustLibreCell                #100\n",
+        "RustLibreCell                #100 \n",
         "\n",
         "..  ..  T♣  .. || 9♣  7♠  8♥  8♦ \n",
         "-------------------------------- \n",
@@ -2172,7 +2172,7 @@ fn ten_of_clubs_should_be_auto_moved_from_cell() {
     let count = 1;
 
     let reference = concat!(
-        "RustLibreCell                #100\n",
+        "RustLibreCell                #100 \n",
         "\n",
         "..  ..  ..  .. || T♣  7♠  8♥  8♦ \n",
         "-------------------------------- \n",
@@ -2190,7 +2190,7 @@ fn ten_of_clubs_should_be_auto_moved_from_cell() {
 #[test]
 fn ten_of_clubs_should_be_auto_moved_from_column() {
     let input = concat!(
-        "RustLibreCell                #100\n",
+        "RustLibreCell                #100 \n",
         "\n",
         "..  ..  ..  .. || 9♣  7♠  8♥  8♦ \n",
         "-------------------------------- \n",
@@ -2205,7 +2205,7 @@ fn ten_of_clubs_should_be_auto_moved_from_column() {
     let count = 1;
 
     let reference = concat!(
-        "RustLibreCell                #100\n",
+        "RustLibreCell                #100 \n",
         "\n",
         "..  ..  ..  .. || T♣  7♠  8♥  8♦ \n",
         "-------------------------------- \n",
@@ -2223,7 +2223,7 @@ fn ten_of_clubs_should_be_auto_moved_from_column() {
 #[test]
 fn auto_moves_should_lead_to_won_game() {
     let input = concat!(
-        "RustLibreCell                #100\n",
+        "RustLibreCell                #100 \n",
         "\n",
         "4♥  4♦  ..  .. || 5♣  5♠  3♥  3♦ \n",
         "-------------------------------- \n",
@@ -2241,7 +2241,7 @@ fn auto_moves_should_lead_to_won_game() {
     let count = 36;
 
     let reference = concat!(
-        "RustLibreCell                #100\n",
+        "RustLibreCell                #100 \n",
         "\n",
         "..  ..  ..  .. || K♣  K♠  K♥  K♦ \n",
         "-------------------------------- \n",
@@ -2254,7 +2254,7 @@ fn auto_moves_should_lead_to_won_game() {
 #[test]
 fn three_of_diamonds_should_be_auto_moved_from_column() {
     let input = concat!(
-        "RustLibreCell                #100\n",
+        "RustLibreCell                #100 \n",
         "\n",
         "8♥  3♠  K♣  6♥ || A♣  A♠  A♥  2♦ \n",
         "-------------------------------- \n",
@@ -2271,7 +2271,7 @@ fn three_of_diamonds_should_be_auto_moved_from_column() {
     let count = 1;
 
     let reference = concat!(
-        "RustLibreCell                #100\n",
+        "RustLibreCell                #100 \n",
         "\n",
         "8♥  3♠  K♣  6♥ || A♣  A♠  A♥  3♦ \n",
         "-------------------------------- \n",
@@ -2291,7 +2291,7 @@ fn three_of_diamonds_should_be_auto_moved_from_column() {
 #[test]
 fn three_and_four_of_hearts_should_be_auto_moved() {
     let input = concat!(
-        "RustLibreCell                #100\n",
+        "RustLibreCell                #100 \n",
         "\n",
         "3♥  T♠  8♦  T♥ || 3♣  3♠  2♥  A♦ \n",
         "-------------------------------- \n",
@@ -2312,7 +2312,7 @@ fn three_and_four_of_hearts_should_be_auto_moved() {
     let count = 2;
 
     let reference = concat!(
-        "RustLibreCell                #100\n",
+        "RustLibreCell                #100 \n",
         "\n",
         "..  T♠  8♦  T♥ || 3♣  3♠  4♥  A♦ \n",
         "-------------------------------- \n",

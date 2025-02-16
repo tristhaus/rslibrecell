@@ -235,7 +235,7 @@ fn game_display_trait_works() {
 #[test]
 fn game_tryfrom_ref_str_with_unicode_representation_works() {
     let input = concat!(
-        "RustLibreCell                 #42\n",
+        "RustLibreCell                 #42 \n",
         "\n",
         " T♣  ..  ..  Q♥ || 2♣  ..  A♥  2♦ \n",
         "--------------------------------- \n",
@@ -343,9 +343,8 @@ fn game_tryfrom_empty_string_errors() {
 
 #[test]
 fn game_tryfrom_no_cell_line_errors() {
-    let input = "RustLibreCell                 #42
-
-";
+    let input = concat!("RustLibreCell                 #42 \n",
+"\n");
 
     Game::try_from(input).expect_err("should have error")
 }
@@ -353,7 +352,7 @@ fn game_tryfrom_no_cell_line_errors() {
 #[test]
 fn game_tryfrom_bad_card_in_column_errors() {
     let input = concat!(
-        "RustLibreCell                 #42\n",
+        "RustLibreCell                 #42 \n",
         "\n",
         " T♣  ..  ..  Q♥ || 2♣  ..  A♥  2♦ \n",
         "--------------------------------- \n",
@@ -383,7 +382,7 @@ fn game_tryfrom_bad_card_in_column_errors() {
 #[test]
 fn game_tryfrom_card_missing_errors() {
     let ace_of_hearts_missing = concat!(
-        "RustLibreCell                 #42\n",
+        "RustLibreCell                 #42 \n",
         "\n",
         " T♣  ..  ..  Q♥ || 2♣  ..  ..  2♦ \n",
         "--------------------------------- \n",
@@ -413,7 +412,7 @@ fn game_tryfrom_card_missing_errors() {
 #[test]
 fn game_tryfrom_duplicated_card_errors() {
     let ace_of_diamonds_twice = concat!(
-        "RustLibreCell                 #42\n",
+        "RustLibreCell                 #42 \n",
         "\n",
         " T♣  ..  A♦  Q♥ || 2♣  ..  ..  2♦ \n",
         "--------------------------------- \n",
@@ -443,7 +442,7 @@ fn game_tryfrom_duplicated_card_errors() {
 #[test]
 fn game_is_won_all_cards_on_foundations_true() {
     let input = concat!(
-        "RustLibreCell                 #42\n",
+        "RustLibreCell                 #42 \n",
         "\n",
         " ..  ..  ..  .. || K♣  K♠  K♥  K♦ \n",
         "--------------------------------- \n",
@@ -458,7 +457,7 @@ fn game_is_won_all_cards_on_foundations_true() {
 #[test]
 fn game_is_won_not_all_cards_on_foundations_false() {
     let input = concat!(
-        "RustLibreCell                 #42\n",
+        "RustLibreCell                 #42 \n",
         "\n",
         " T♣  ..  ..  Q♥ || 2♣  ..  A♥  2♦ \n",
         "--------------------------------- \n",
@@ -490,7 +489,7 @@ fn game_is_won_not_all_cards_on_foundations_false() {
 #[test]
 fn game_from_id_00001_works() {
     let reference = concat!(
-        "RustLibreCell                  #1\n",
+        "RustLibreCell                  #1 \n",
         "\n",
         " ..  ..  ..  .. || ..  ..  ..  .. \n",
         "--------------------------------- \n",
@@ -513,7 +512,7 @@ fn game_from_id_00001_works() {
 #[test]
 fn game_from_id_00617_works() {
     let reference = concat!(
-        "RustLibreCell                #617\n",
+        "RustLibreCell                #617 \n",
         "\n",
         " ..  ..  ..  .. || ..  ..  ..  .. \n",
         "--------------------------------- \n",
@@ -536,7 +535,7 @@ fn game_from_id_00617_works() {
 #[test]
 fn game_from_id_30828_works() {
     let reference = concat!(
-        "RustLibreCell              #30828\n",
+        "RustLibreCell              #30828 \n",
         "\n",
         " ..  ..  ..  .. || ..  ..  ..  .. \n",
         "--------------------------------- \n",

@@ -108,7 +108,7 @@ impl TryFrom<&str> for Game {
             }
         }
 
-        let game_id = match game_id.parse::<u16>() {
+        let game_id = match game_id.trim().parse::<u16>() {
             Ok(id) => id,
             Err(_) => return Err(()),
         };
