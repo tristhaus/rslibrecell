@@ -1,4 +1,3 @@
-
 /// Implements the specific PRNG needed for creating MS FreeCell deals.
 pub struct Prng {
     pub state: u32,

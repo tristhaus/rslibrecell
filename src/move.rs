@@ -28,10 +28,10 @@ pub struct Move {
 }
 
 /// Applies a move to the game.
-/// 
+///
 /// # Panics
 /// The method will only panic in case of an internal bug.
-pub fn apply(game: &Game, mv: Move) -> Result<Game, ()> {
+pub(crate) fn apply(game: &Game, mv: Move) -> Result<Game, ()> {
     match mv.from {
         Location::Cell { i: from } => {
             if from > 3 || game.cells[from].is_none() {
@@ -81,13 +81,13 @@ pub fn apply(game: &Game, mv: Move) -> Result<Game, ()> {
 
 /// Performs **one** automove, *i.e.* the moving of a card
 /// to its foundation if it definitely is no longer useful.
-/// 
+///
 /// If an automove was performed, `Some` is returned, `None` otherwise.
 /// The rules for an automove are somewhat involved, but boil down to:
 /// > All cards that could be placed on the automoved card are
 /// > * already placed on a foundation or
 /// > * can be placed there, once accessible
-pub fn automove(game: &Game) -> Option<Game> {
+pub(crate) fn automove(game: &Game) -> Option<Game> {
     let check = |card: Card| -> bool {
         if card.rank == Rank::Ace {
             return true;
@@ -339,7 +339,7 @@ mod detail {
         game::Game,
     };
 
-    pub fn move_card_to_foundation(game: &mut Game, card: Card) -> Result<(), ()> {
+    pub(super) fn move_card_to_foundation(game: &mut Game, card: Card) -> Result<(), ()> {
         let foundation = find_foundation_for(card.suit);
 
         let foundation = &mut game.foundations[foundation];
@@ -373,7 +373,7 @@ mod detail {
         Ok(())
     }
 
-    pub fn find_foundation_for(suit: Suit) -> usize {
+    pub(super) fn find_foundation_for(suit: Suit) -> usize {
         let foundation = match suit {
             Suit::Clubs => 0 as usize,
             Suit::Spades => 1 as usize,
@@ -384,14 +384,14 @@ mod detail {
         return foundation;
     }
 
-    /// Returns a flag indicating whether the two cards, with the lower card placed below 
+    /// Returns a flag indicating whether the two cards, with the lower card placed below
     /// the upper card on a column, will legally fit together.
-    /// 
+    ///
     /// Examples:
     /// * upper `6♣`, lower `5♥` yields `true`
     /// * upper `6♣`, lower `7♥` yields `false`
     /// * upper `6♣`, lower `5♠` yields `false`
-    pub fn fit_together(upper: &Card, lower: &Card) -> bool {
+    pub(super) fn fit_together(upper: &Card, lower: &Card) -> bool {
         if upper.rank == Rank::Ace {
             return false;
         }

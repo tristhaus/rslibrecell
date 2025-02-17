@@ -343,8 +343,7 @@ fn game_tryfrom_empty_string_errors() {
 
 #[test]
 fn game_tryfrom_no_cell_line_errors() {
-    let input = concat!("RustLibreCell                 #42 \n",
-"\n");
+    let input = concat!("RustLibreCell                 #42 \n", "\n");
 
     Game::try_from(input).expect_err("should have error")
 }
@@ -446,7 +445,7 @@ fn game_is_won_all_cards_on_foundations_true() {
         "\n",
         " ..  ..  ..  .. || K♣  K♠  K♥  K♦ \n",
         "--------------------------------- \n",
-         "                                 \n"
+        "                                  \n"
     );
 
     let game = Game::try_from(input).unwrap();

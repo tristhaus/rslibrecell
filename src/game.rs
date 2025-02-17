@@ -218,7 +218,7 @@ impl Game {
     ///
     /// # Panics
     /// The method will panic if the underlying code, especially the PRNG, panics.
-    pub fn from_id(id: u16) -> Game {
+    pub(crate) fn from_id(id: u16) -> Game {
         let mut prng = Prng { state: id as u32 };
 
         let mut game = Game {
@@ -255,7 +255,7 @@ impl Game {
 
     /// Returns a flag indicating whether the game is won,
     /// *i.e.* all cards are on the foundations.
-    pub fn is_won(&self) -> bool {
+    pub(crate) fn is_won(&self) -> bool {
         let count: usize = self.foundations.iter().fold(0, |acc, x| acc + x.len());
 
         count == 52

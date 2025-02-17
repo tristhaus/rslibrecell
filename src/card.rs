@@ -83,7 +83,7 @@ impl TryFrom<u8> for Suit {
 }
 
 /// A card, represented through an internal ID, a suit and a rank.
-/// 
+///
 /// A card is unique within a FreeCell game.
 #[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]
 pub struct Card {
@@ -96,10 +96,10 @@ pub struct Card {
 
 impl Card {
     /// Creates a card from an ID.
-    /// 
+    ///
     /// # Panics
     /// The method will panic if given an invalid `id > 51`.
-    pub fn from_id(id: u8) -> Card {
+    pub(crate) fn from_id(id: u8) -> Card {
         if id > 51 {
             panic!("`id` cannot be greater than 51, is: {id}")
         }
@@ -111,13 +111,14 @@ impl Card {
     }
 
     /// Creates a card from its string representation.
-    /// 
+    ///
     /// The string representation must be a valid rank identifier
     /// followed by a valid suit symbol, such as `"8♠"` or `"K♦"`.
-    /// 
+    ///
     /// # Panics
     /// The method will panic if given an invalid string.
-    pub fn from_str(representation: &str) -> Card {
+    #[cfg(test)]
+    pub(crate) fn from_str(representation: &str) -> Card {
         Card::try_from(representation).unwrap()
     }
 }
@@ -155,7 +156,7 @@ impl TryFrom<&str> for Card {
     type Error = ();
 
     /// Tries to create a card fomr its string representation.
-    /// 
+    ///
     /// The string representation must be a valid rank identifier
     /// followed by a valid suit symbol, such as `"8♠"` or `"K♦"`.
     fn try_from(value: &str) -> Result<Self, Self::Error> {
