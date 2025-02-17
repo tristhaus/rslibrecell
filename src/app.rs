@@ -7,7 +7,7 @@ use ratatui::{
     style::Stylize,
     symbols::border,
     text::{Line, Text},
-    widgets::{Block, Paragraph, Widget},
+    widgets::{Block, Clear, Paragraph, Widget},
     DefaultTerminal, Frame,
 };
 
@@ -18,6 +18,8 @@ enum AppState {
     Base,
     /// The app is about to exit.
     Exit,
+    /// The app is displaying the modal help dialog.
+    HelpModal,
 }
 
 /// The actual app.
@@ -66,9 +68,38 @@ impl App {
 
     /// Handles any key events.
     fn handle_key_event(&mut self, key_event: KeyEvent) {
+        match self.app_state {
+            AppState::Base => self.handle_key_event_base(key_event),
+            AppState::Exit => panic!("should never happen"),
+            AppState::HelpModal => self.handle_key_event_help_modal(key_event),
+        };
+    }
+
+    fn handle_key_event_base(&mut self, key_event: KeyEvent) {
         match key_event.code {
-            KeyCode::Char('q') if key_event.modifiers.contains(KeyModifiers::CONTROL) => self.exit(),
+            KeyCode::Char('q') if key_event.modifiers.contains(KeyModifiers::CONTROL) => {
+                self.exit()
+            }
+            KeyCode::F(1) => self.help_modal(),
             _ => {}
+        }
+    }
+
+    fn handle_key_event_help_modal(&mut self, key_event: KeyEvent) {
+        match key_event.code {
+            KeyCode::Char('q') if key_event.modifiers.contains(KeyModifiers::CONTROL) => {
+                self.exit()
+            }
+            KeyCode::Esc => {
+                self.base();
+            }
+            _ => {}
+        }
+    }
+
+    fn base(&mut self) {
+        match self.app_state {
+            _ => self.app_state = AppState::Base,
         }
     }
 
@@ -77,12 +108,23 @@ impl App {
             _ => self.app_state = AppState::Exit,
         }
     }
+
+    fn help_modal(&mut self) {
+        match self.app_state {
+            _ => self.app_state = AppState::HelpModal,
+        }
+    }
 }
 
 impl Widget for &App {
     fn render(self, area: Rect, buf: &mut Buffer) {
         let title = Line::from(" RSLibreCell ".bold());
-        let instructions = Line::from(vec![" Quit ".into(), "<CTRL-q> ".blue().bold()]);
+        let instructions = Line::from(vec![
+            " Help ".into(),
+            "<F1>".blue().bold(),
+            " Quit ".into(),
+            "<CTRL-q> ".blue().bold(),
+        ]);
         let block = Block::bordered()
             .title(title.centered())
             .title_bottom(instructions.centered())
@@ -100,6 +142,27 @@ impl Widget for &App {
             .centered()
             .block(block)
             .render(area, buf);
+
+        if let AppState::HelpModal = self.app_state {
+            let title = Line::from(" Help ");
+            let instructions = Line::from(vec![" Close ".into(), "<Esc> ".blue().bold()]);
+            let block = Block::bordered()
+                .title(title.centered())
+                .title_bottom(instructions.centered());
+            let area = popup_area(area);
+            Clear::default().render(area, buf);
+            block.render(area, buf);
+        }
+    }
+}
+
+/// helper function to create a centered rect using up certain percentage of the available rect `r`
+fn popup_area(area: Rect) -> Rect {
+    Rect {
+        x: area.x + 2,
+        y: area.y + 1,
+        width: area.width - 4,
+        height: area.height - 2,
     }
 }
 
