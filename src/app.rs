@@ -1,6 +1,6 @@
 use std::io;
 
-use crossterm::event::{self, Event, KeyCode, KeyEvent, KeyEventKind};
+use crossterm::event::{self, Event, KeyCode, KeyEvent, KeyEventKind, KeyModifiers};
 use ratatui::{
     buffer::Buffer,
     layout::Rect,
@@ -67,7 +67,7 @@ impl App {
     /// Handles any key events.
     fn handle_key_event(&mut self, key_event: KeyEvent) {
         match key_event.code {
-            KeyCode::Char('Q') => self.exit(),
+            KeyCode::Char('q') if key_event.modifiers.contains(KeyModifiers::CONTROL) => self.exit(),
             _ => {}
         }
     }
@@ -82,7 +82,7 @@ impl App {
 impl Widget for &App {
     fn render(self, area: Rect, buf: &mut Buffer) {
         let title = Line::from(" RSLibreCell ".bold());
-        let instructions = Line::from(vec![" Quit ".into(), "<Q> ".blue().bold()]);
+        let instructions = Line::from(vec![" Quit ".into(), "<CTRL-q> ".blue().bold()]);
         let block = Block::bordered()
             .title(title.centered())
             .title_bottom(instructions.centered())

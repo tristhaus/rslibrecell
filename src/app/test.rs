@@ -1,4 +1,5 @@
 use super::*;
+use crossterm::event::KeyModifiers;
 use ratatui::style::Style;
 
 #[test]
@@ -23,12 +24,12 @@ fn render() {
         "┃                                                ┃",
         "┃                                                ┃",
         "┃                                                ┃",
-        "┗━━━━━━━━━━━━━━━━━━━ Quit <Q> ━━━━━━━━━━━━━━━━━━━┛",
+        "┗━━━━━━━━━━━━━━━━ Quit <CTRL-q> ━━━━━━━━━━━━━━━━━┛",
     ]);
     let title_style = Style::new().bold();
     let key_style = Style::new().blue().bold();
     expected.set_style(Rect::new(18, 0, 13, 1), title_style);
-    expected.set_style(Rect::new(26, 14, 4, 1), key_style);
+    expected.set_style(Rect::new(23, 14, 9, 1), key_style);
 
     assert_eq!(buf, expected);
 }
@@ -36,7 +37,9 @@ fn render() {
 #[test]
 fn handle_key_event_quit() -> io::Result<()> {
     let mut app = App::new();
-    app.handle_key_event(KeyCode::Char('Q').into());
+    let mut bla: KeyEvent = KeyCode::Char('q').into();
+    bla.modifiers = KeyModifiers::CONTROL;
+    app.handle_key_event(bla);
     assert_eq!(app.app_state, AppState::Exit);
 
     Ok(())
