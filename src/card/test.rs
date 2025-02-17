@@ -14,13 +14,13 @@ fn card_partialeq_trait_works() {
 fn card_can_be_constructed_from_id() {
     let card1 = Card::from_id(0);
 
-    assert_eq!(card1.suit(), &Suit::Clubs);
-    assert_eq!(card1.rank(), &Rank::Ace);
+    assert_eq!(card1.suit, Suit::Clubs);
+    assert_eq!(card1.rank, Rank::Ace);
 
     let card2 = Card::from_id(42);
 
-    assert_eq!(card2.suit(), &Suit::Hearts);
-    assert_eq!(card2.rank(), &Rank::Jack);
+    assert_eq!(card2.suit, Suit::Hearts);
+    assert_eq!(card2.rank, Rank::Jack);
 }
 
 #[test]

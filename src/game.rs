@@ -158,10 +158,10 @@ impl TryFrom<&str> for Game {
                         let card = card.unwrap();
                         let foundation_index = (index - 19) / 4;
 
-                        let rank = *card.rank() as u8;
+                        let rank = card.rank as u8;
 
                         for r in 0..(rank + 1) {
-                            let id = r * 4 + *card.suit() as u8;
+                            let id = r * 4 + card.suit as u8;
                             let foundation_card = Card::from_id(id);
                             foundations[foundation_index].push(foundation_card);
                             if !check_set.insert(foundation_card) {

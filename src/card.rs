@@ -88,8 +88,10 @@ impl TryFrom<u8> for Suit {
 #[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]
 pub struct Card {
     id: u8,
-    suit: Suit,
-    rank: Rank,
+    /// The suit of the card.
+    pub suit: Suit,
+    /// The rank of the card.
+    pub rank: Rank,
 }
 
 impl Card {
@@ -117,16 +119,6 @@ impl Card {
     /// The method will panic if given an invalid string.
     pub fn from_str(representation: &str) -> Card {
         Card::try_from(representation).unwrap()
-    }
-
-    /// Access the suit of the card instance.
-    pub fn suit(&self) -> &Suit {
-        &self.suit
-    }
-
-    /// Access the rank of the card instance.
-    pub fn rank(&self) -> &Rank {
-        &self.rank
     }
 }
 

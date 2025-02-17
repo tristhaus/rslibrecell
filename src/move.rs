@@ -89,19 +89,19 @@ pub fn apply(game: &Game, mv: Move) -> Result<Game, ()> {
 /// > * can be placed there, once accessible
 pub fn automove(game: &Game) -> Option<Game> {
     let check = |card: Card| -> bool {
-        if *card.rank() == Rank::Ace {
+        if card.rank == Rank::Ace {
             return true;
         }
 
-        let own_foundation = &game.foundations[detail::find_foundation_for(*card.suit())];
+        let own_foundation = &game.foundations[detail::find_foundation_for(card.suit)];
 
         if own_foundation.len() == 0
-            || *own_foundation.last().unwrap().rank() as i8 != *card.rank() as i8 - 1
+            || own_foundation.last().unwrap().rank as i8 != card.rank as i8 - 1
         {
             return false;
         }
 
-        let other_foundation_same_color = match *card.suit() {
+        let other_foundation_same_color = match card.suit {
             Suit::Clubs => &game.foundations[detail::find_foundation_for(Suit::Spades)],
             Suit::Diamonds => &game.foundations[detail::find_foundation_for(Suit::Hearts)],
             Suit::Hearts => &game.foundations[detail::find_foundation_for(Suit::Diamonds)],
@@ -109,20 +109,20 @@ pub fn automove(game: &Game) -> Option<Game> {
         };
 
         let other_foundation_same_color_rank = match other_foundation_same_color.last() {
-            Some(card) => *card.rank() as i8,
+            Some(card) => card.rank as i8,
             None => -1 as i8,
         };
 
-        let other_color_min_rank = match *card.suit() {
+        let other_color_min_rank = match card.suit {
             Suit::Clubs | Suit::Spades => {
                 let heart_rank =
                     match &game.foundations[detail::find_foundation_for(Suit::Hearts)].last() {
-                        Some(card) => *card.rank() as i8,
+                        Some(card) => card.rank as i8,
                         None => -1 as i8,
                     };
                 let diamond_rank =
                     match &game.foundations[detail::find_foundation_for(Suit::Diamonds)].last() {
-                        Some(card) => *card.rank() as i8,
+                        Some(card) => card.rank as i8,
                         None => -1 as i8,
                     };
 
@@ -131,12 +131,12 @@ pub fn automove(game: &Game) -> Option<Game> {
             Suit::Diamonds | Suit::Hearts => {
                 let club_rank =
                     match &game.foundations[detail::find_foundation_for(Suit::Clubs)].last() {
-                        Some(card) => *card.rank() as i8,
+                        Some(card) => card.rank as i8,
                         None => -1 as i8,
                     };
                 let spade_rank =
                     match &game.foundations[detail::find_foundation_for(Suit::Spades)].last() {
-                        Some(card) => *card.rank() as i8,
+                        Some(card) => card.rank as i8,
                         None => -1 as i8,
                     };
 
@@ -144,7 +144,7 @@ pub fn automove(game: &Game) -> Option<Game> {
             }
         };
 
-        let own_foundation_rank = *own_foundation.last().unwrap().rank() as i8;
+        let own_foundation_rank = own_foundation.last().unwrap().rank as i8;
 
         return (own_foundation_rank - other_color_min_rank < 2)
             && (own_foundation_rank <= other_color_min_rank
@@ -340,7 +340,7 @@ mod detail {
     };
 
     pub fn move_card_to_foundation(game: &mut Game, card: Card) -> Result<(), ()> {
-        let foundation = find_foundation_for(*card.suit());
+        let foundation = find_foundation_for(card.suit);
 
         let foundation = &mut game.foundations[foundation];
 
@@ -348,18 +348,18 @@ mod detail {
 
         match foundation_card {
             None => {
-                if *card.rank() == Rank::Ace {
+                if card.rank == Rank::Ace {
                     foundation.push(card);
                 } else {
                     return Err(());
                 }
             }
             Some(foundation_card) => {
-                if *card.rank() == Rank::Ace {
+                if card.rank == Rank::Ace {
                     return Err(());
                 } else {
-                    let card_rank = *card.rank() as u8;
-                    let foundation_card_rank = *foundation_card.rank() as u8;
+                    let card_rank = card.rank as u8;
+                    let foundation_card_rank = foundation_card.rank as u8;
 
                     if card_rank - 1 == foundation_card_rank {
                         foundation.push(card);
@@ -392,20 +392,20 @@ mod detail {
     /// * upper `6♣`, lower `7♥` yields `false`
     /// * upper `6♣`, lower `5♠` yields `false`
     pub fn fit_together(upper: &Card, lower: &Card) -> bool {
-        if *upper.rank() == Rank::Ace {
+        if upper.rank == Rank::Ace {
             return false;
         }
 
         let is_red = |card: Card| -> bool {
-            return *card.suit() == Suit::Hearts || *card.suit() == Suit::Diamonds;
+            return card.suit == Suit::Hearts || card.suit == Suit::Diamonds;
         };
 
         if is_red(*lower) == is_red(*upper) {
             return false;
         }
 
-        let over_rank = *upper.rank() as u8;
-        let under_rank = *lower.rank() as u8;
+        let over_rank = upper.rank as u8;
+        let under_rank = lower.rank as u8;
 
         return over_rank - 1 == under_rank;
     }
