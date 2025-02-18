@@ -4,6 +4,7 @@ use crate::card::{Card, Rank, Suit};
 use crate::game::Game;
 
 /// Defines the `to` and `from` locations of a move.
+#[derive(Clone, Debug)]
 pub enum Location {
     /// The location is a cell with some 0-based index.
     Cell {
@@ -20,6 +21,7 @@ pub enum Location {
 }
 
 /// Defines a move for a game.
+#[derive(Clone)]
 pub struct Move {
     /// The initial location of the card(s).
     pub from: Location,

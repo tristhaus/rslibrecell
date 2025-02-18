@@ -13,6 +13,7 @@ use ratatui::{
 use rslibrecell::{
     card::{Card, Suit},
     game_handler::GameHandler,
+    r#move::{Location, Move},
 };
 
 /// The state of the app.
@@ -31,6 +32,7 @@ enum AppState {
 pub struct App {
     app_state: AppState,
     game_handler: GameHandler,
+    move_from: Option<Location>,
 }
 
 impl App {
@@ -38,6 +40,7 @@ impl App {
         App {
             app_state: AppState::Base,
             game_handler: GameHandler::default(),
+            move_from: None,
         }
     }
 
@@ -88,6 +91,29 @@ impl App {
             }
             KeyCode::F(1) => self.help_modal(),
             KeyCode::F(2) => self.random_game(),
+            _ => self.handle_key_event_game(key_event),
+        }
+    }
+
+    fn handle_key_event_game(&mut self, key_event: KeyEvent) {
+        match key_event.code {
+            KeyCode::Char('q') => self.register_partial_move(Location::Cell { i: 0 }),
+            KeyCode::Char('w') => self.register_partial_move(Location::Cell { i: 1 }),
+            KeyCode::Char('e') => self.register_partial_move(Location::Cell { i: 2 }),
+            KeyCode::Char('r') => self.register_partial_move(Location::Cell { i: 3 }),
+            KeyCode::Char('a') => self.register_partial_move(Location::Column { i: 0 }),
+            KeyCode::Char('s') => self.register_partial_move(Location::Column { i: 1 }),
+            KeyCode::Char('d') => self.register_partial_move(Location::Column { i: 2 }),
+            KeyCode::Char('f') => self.register_partial_move(Location::Column { i: 3 }),
+            KeyCode::Char('j') => self.register_partial_move(Location::Column { i: 4 }),
+            KeyCode::Char('k') => self.register_partial_move(Location::Column { i: 5 }),
+            KeyCode::Char('l') => self.register_partial_move(Location::Column { i: 6 }),
+            KeyCode::Char('ö') => self.register_partial_move(Location::Column { i: 7 }),
+            KeyCode::Char('u') | KeyCode::Char('i') | KeyCode::Char('o') | KeyCode::Char('p') => {
+                self.register_partial_move(Location::Foundation)
+            }
+            KeyCode::Char(' ') => self.clear_move(),
+            KeyCode::Char('R') => self.revert(),
             _ => {}
         }
     }
@@ -129,6 +155,30 @@ impl App {
     #[cfg(test)]
     fn game_from_u16_id(&mut self, id: u16) {
         self.game_handler.game_from_id(id);
+    }
+
+    fn register_partial_move(&mut self, location: Location) {
+        match &self.move_from {
+            Some(first) => {
+                let _ = self.game_handler.make_move(Move {
+                    from: first.clone(),
+                    to: location,
+                });
+                self.move_from = None;
+            },
+            None => {
+                self.move_from = Some(location);
+            },
+        }
+    }
+
+    fn clear_move(&mut self) {
+        self.move_from = None;
+    }
+
+    fn revert(&mut self) {
+        self.move_from = None;
+        let _ = self.game_handler.revert();
     }
 }
 

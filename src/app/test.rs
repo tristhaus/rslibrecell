@@ -163,6 +163,203 @@ fn render_fixed_game() {
 }
 
 #[test]
+fn render_fixed_game_use_game_keys() {
+    let mut app = App::new();
+    let mut buf = Buffer::empty(Rect::new(0, 0, 50, 15));
+    app.game_from_u16_id(1);
+
+    app.handle_key_event(KeyCode::Char('k').into());
+    app.handle_key_event(KeyCode::Char('q').into());
+
+    app.handle_key_event(KeyCode::Char('k').into());
+    app.handle_key_event(KeyCode::Char('w').into());
+
+    app.render(buf.area, &mut buf);
+
+    let mut expected = Buffer::with_lines(vec![
+        "┏━━━━━━━━━━━━━━━━━ RSLibreCell ━━━━━━━━━━━━━━━━━━┓",
+        "┃                                      #1        ┃",
+        "┃        3♦  ..  ..  .. || 2♣  A♠  ..  ..        ┃",
+        "┃       ---------------------------------        ┃",
+        "┃         J♦  2♦  9♥  J♣  5♦  7♥  7♣  5♥         ┃",
+        "┃         K♦  K♣  9♠  5♠  A♦  Q♣  K♥  3♥         ┃",
+        "┃         2♠  K♠  9♦  Q♦  J♠      A♥  3♣         ┃",
+        "┃         4♣  5♣  T♠  Q♥  4♥      4♦  7♠         ┃",
+        "┃         3♠  T♦  4♠  T♥  8♥      J♥  7♦         ┃",
+        "┃         6♦  8♠  8♦  Q♠  6♣      8♣  T♣         ┃",
+        "┃         6♠  9♣  2♥  6♥                         ┃",
+        "┃                                                ┃",
+        "┃                                                ┃",
+        "┃                                                ┃",
+        "┗━━━━━━━━━━━ Help <F1> Quit <CTRL-q> ━━━━━━━━━━━━┛",
+    ]);
+    {
+        let title_style = Style::new().bold();
+        let key_style = Style::new().blue().bold();
+        expected.set_style(Rect::new(18, 0, 13, 1), title_style);
+        expected.set_style(Rect::new(18, 14, 4, 1), key_style);
+        expected.set_style(Rect::new(28, 14, 9, 1), key_style);
+
+        let red_style = Style::new().red();
+        expected.set_style(Rect::new(8, 2, 4, 1), red_style);
+        expected.set_style(Rect::new(9, 4, 4, 1), red_style);
+        expected.set_style(Rect::new(13, 4, 4, 1), red_style);
+        expected.set_style(Rect::new(17, 4, 4, 1), red_style);
+        expected.set_style(Rect::new(25, 4, 4, 1), red_style);
+        expected.set_style(Rect::new(29, 4, 4, 1), red_style);
+        expected.set_style(Rect::new(37, 4, 4, 1), red_style);
+        expected.set_style(Rect::new(9, 5, 4, 1), red_style);
+        expected.set_style(Rect::new(25, 5, 4, 1), red_style);
+        expected.set_style(Rect::new(33, 5, 4, 1), red_style);
+        expected.set_style(Rect::new(37, 5, 4, 1), red_style);
+        expected.set_style(Rect::new(17, 6, 4, 1), red_style);
+        expected.set_style(Rect::new(21, 6, 4, 1), red_style);
+        expected.set_style(Rect::new(33, 6, 4, 1), red_style);
+        expected.set_style(Rect::new(21, 7, 4, 1), red_style);
+        expected.set_style(Rect::new(25, 7, 4, 1), red_style);
+        expected.set_style(Rect::new(33, 7, 4, 1), red_style);
+        expected.set_style(Rect::new(13, 8, 4, 1), red_style);
+        expected.set_style(Rect::new(21, 8, 4, 1), red_style);
+        expected.set_style(Rect::new(25, 8, 4, 1), red_style);
+        expected.set_style(Rect::new(33, 8, 4, 1), red_style);
+        expected.set_style(Rect::new(37, 8, 4, 1), red_style);
+        expected.set_style(Rect::new(9, 9, 4, 1), red_style);
+        expected.set_style(Rect::new(17, 9, 4, 1), red_style);
+        expected.set_style(Rect::new(17, 10, 4, 1), red_style);
+        expected.set_style(Rect::new(21, 10, 4, 1), red_style);
+    }
+
+    assert_eq!(buf, expected);
+
+    app.handle_key_event(KeyCode::Char('a').into());
+    app.handle_key_event(KeyCode::Char('w').into());
+
+    app.handle_key_event(KeyCode::Char('a').into());
+    app.handle_key_event(KeyCode::Char(' ').into());
+
+    assert!(app.move_from.is_none());
+
+    app.render(buf.area, &mut buf);
+
+    let mut expected = Buffer::with_lines(vec![
+        "┏━━━━━━━━━━━━━━━━━ RSLibreCell ━━━━━━━━━━━━━━━━━━┓",
+        "┃                                      #1        ┃",
+        "┃        3♦  6♠  ..  .. || 2♣  A♠  ..  ..        ┃",
+        "┃       ---------------------------------        ┃",
+        "┃         J♦  2♦  9♥  J♣  5♦  7♥  7♣  5♥         ┃",
+        "┃         K♦  K♣  9♠  5♠  A♦  Q♣  K♥  3♥         ┃",
+        "┃         2♠  K♠  9♦  Q♦  J♠      A♥  3♣         ┃",
+        "┃         4♣  5♣  T♠  Q♥  4♥      4♦  7♠         ┃",
+        "┃         3♠  T♦  4♠  T♥  8♥      J♥  7♦         ┃",
+        "┃         6♦  8♠  8♦  Q♠  6♣      8♣  T♣         ┃",
+        "┃             9♣  2♥  6♥                         ┃",
+        "┃                                                ┃",
+        "┃                                                ┃",
+        "┃                                                ┃",
+        "┗━━━━━━━━━━━ Help <F1> Quit <CTRL-q> ━━━━━━━━━━━━┛",
+    ]);
+    {
+        let title_style = Style::new().bold();
+        let key_style = Style::new().blue().bold();
+        expected.set_style(Rect::new(18, 0, 13, 1), title_style);
+        expected.set_style(Rect::new(18, 14, 4, 1), key_style);
+        expected.set_style(Rect::new(28, 14, 9, 1), key_style);
+
+        let red_style = Style::new().red();
+        expected.set_style(Rect::new(8, 2, 4, 1), red_style);
+        expected.set_style(Rect::new(9, 4, 4, 1), red_style);
+        expected.set_style(Rect::new(13, 4, 4, 1), red_style);
+        expected.set_style(Rect::new(17, 4, 4, 1), red_style);
+        expected.set_style(Rect::new(25, 4, 4, 1), red_style);
+        expected.set_style(Rect::new(29, 4, 4, 1), red_style);
+        expected.set_style(Rect::new(37, 4, 4, 1), red_style);
+        expected.set_style(Rect::new(9, 5, 4, 1), red_style);
+        expected.set_style(Rect::new(25, 5, 4, 1), red_style);
+        expected.set_style(Rect::new(33, 5, 4, 1), red_style);
+        expected.set_style(Rect::new(37, 5, 4, 1), red_style);
+        expected.set_style(Rect::new(17, 6, 4, 1), red_style);
+        expected.set_style(Rect::new(21, 6, 4, 1), red_style);
+        expected.set_style(Rect::new(33, 6, 4, 1), red_style);
+        expected.set_style(Rect::new(21, 7, 4, 1), red_style);
+        expected.set_style(Rect::new(25, 7, 4, 1), red_style);
+        expected.set_style(Rect::new(33, 7, 4, 1), red_style);
+        expected.set_style(Rect::new(13, 8, 4, 1), red_style);
+        expected.set_style(Rect::new(21, 8, 4, 1), red_style);
+        expected.set_style(Rect::new(25, 8, 4, 1), red_style);
+        expected.set_style(Rect::new(33, 8, 4, 1), red_style);
+        expected.set_style(Rect::new(37, 8, 4, 1), red_style);
+        expected.set_style(Rect::new(9, 9, 4, 1), red_style);
+        expected.set_style(Rect::new(17, 9, 4, 1), red_style);
+        expected.set_style(Rect::new(17, 10, 4, 1), red_style);
+        expected.set_style(Rect::new(21, 10, 4, 1), red_style);
+    }
+
+    assert_eq!(buf, expected);
+
+    app.handle_key_event(KeyCode::Char('a').into());
+    app.handle_key_event(KeyCode::Char('R').into());
+
+    assert!(app.move_from.is_none());
+
+    app.render(buf.area, &mut buf);
+
+    let mut expected = Buffer::with_lines(vec![
+        "┏━━━━━━━━━━━━━━━━━ RSLibreCell ━━━━━━━━━━━━━━━━━━┓",
+        "┃                                      #1        ┃",
+        "┃        3♦  ..  ..  .. || 2♣  A♠  ..  ..        ┃",
+        "┃       ---------------------------------        ┃",
+        "┃         J♦  2♦  9♥  J♣  5♦  7♥  7♣  5♥         ┃",
+        "┃         K♦  K♣  9♠  5♠  A♦  Q♣  K♥  3♥         ┃",
+        "┃         2♠  K♠  9♦  Q♦  J♠      A♥  3♣         ┃",
+        "┃         4♣  5♣  T♠  Q♥  4♥      4♦  7♠         ┃",
+        "┃         3♠  T♦  4♠  T♥  8♥      J♥  7♦         ┃",
+        "┃         6♦  8♠  8♦  Q♠  6♣      8♣  T♣         ┃",
+        "┃         6♠  9♣  2♥  6♥                         ┃",
+        "┃                                                ┃",
+        "┃                                                ┃",
+        "┃                                                ┃",
+        "┗━━━━━━━━━━━ Help <F1> Quit <CTRL-q> ━━━━━━━━━━━━┛",
+    ]);
+    {
+        let title_style = Style::new().bold();
+        let key_style = Style::new().blue().bold();
+        expected.set_style(Rect::new(18, 0, 13, 1), title_style);
+        expected.set_style(Rect::new(18, 14, 4, 1), key_style);
+        expected.set_style(Rect::new(28, 14, 9, 1), key_style);
+
+        let red_style = Style::new().red();
+        expected.set_style(Rect::new(8, 2, 4, 1), red_style);
+        expected.set_style(Rect::new(9, 4, 4, 1), red_style);
+        expected.set_style(Rect::new(13, 4, 4, 1), red_style);
+        expected.set_style(Rect::new(17, 4, 4, 1), red_style);
+        expected.set_style(Rect::new(25, 4, 4, 1), red_style);
+        expected.set_style(Rect::new(29, 4, 4, 1), red_style);
+        expected.set_style(Rect::new(37, 4, 4, 1), red_style);
+        expected.set_style(Rect::new(9, 5, 4, 1), red_style);
+        expected.set_style(Rect::new(25, 5, 4, 1), red_style);
+        expected.set_style(Rect::new(33, 5, 4, 1), red_style);
+        expected.set_style(Rect::new(37, 5, 4, 1), red_style);
+        expected.set_style(Rect::new(17, 6, 4, 1), red_style);
+        expected.set_style(Rect::new(21, 6, 4, 1), red_style);
+        expected.set_style(Rect::new(33, 6, 4, 1), red_style);
+        expected.set_style(Rect::new(21, 7, 4, 1), red_style);
+        expected.set_style(Rect::new(25, 7, 4, 1), red_style);
+        expected.set_style(Rect::new(33, 7, 4, 1), red_style);
+        expected.set_style(Rect::new(13, 8, 4, 1), red_style);
+        expected.set_style(Rect::new(21, 8, 4, 1), red_style);
+        expected.set_style(Rect::new(25, 8, 4, 1), red_style);
+        expected.set_style(Rect::new(33, 8, 4, 1), red_style);
+        expected.set_style(Rect::new(37, 8, 4, 1), red_style);
+        expected.set_style(Rect::new(9, 9, 4, 1), red_style);
+        expected.set_style(Rect::new(17, 9, 4, 1), red_style);
+        expected.set_style(Rect::new(17, 10, 4, 1), red_style);
+        expected.set_style(Rect::new(21, 10, 4, 1), red_style);
+    }
+
+    assert_eq!(buf, expected);
+}
+
+#[test]
 fn handle_key_event_quit() {
     let mut app = App::new();
     let mut key: KeyEvent = KeyCode::Char('q').into();
