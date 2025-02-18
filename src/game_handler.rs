@@ -4,7 +4,7 @@ use crate::game::Game;
 use crate::r#move::{apply, automove, Move};
 
 /// A structure to hold a game and its history.
-#[derive(Default)]
+#[derive(Default, Debug)]
 pub struct GameHandler {
     /// The current game in its current state, if any.
     pub game: Option<Game>,

@@ -6,9 +6,13 @@ use ratatui::{
     layout::{Margin, Rect},
     style::Stylize,
     symbols::border,
-    text::{Line, Text},
+    text::{Line, Span, Text},
     widgets::{Block, Clear, Paragraph, Widget, Wrap},
     DefaultTerminal, Frame,
+};
+use rslibrecell::{
+    card::{Card, Suit},
+    game_handler::GameHandler,
 };
 
 /// The state of the app.
@@ -26,12 +30,14 @@ enum AppState {
 #[derive(Debug)]
 pub struct App {
     app_state: AppState,
+    game_handler: GameHandler,
 }
 
 impl App {
     pub fn new() -> App {
         App {
             app_state: AppState::Base,
+            game_handler: GameHandler::default(),
         }
     }
 
@@ -81,6 +87,7 @@ impl App {
                 self.exit()
             }
             KeyCode::F(1) => self.help_modal(),
+            KeyCode::F(2) => self.random_game(),
             _ => {}
         }
     }
@@ -95,6 +102,10 @@ impl App {
             }
             _ => {}
         }
+    }
+
+    fn random_game(&mut self) {
+        self.game_handler.random_game();
     }
 
     fn base(&mut self) {
@@ -114,6 +125,11 @@ impl App {
             _ => self.app_state = AppState::HelpModal,
         }
     }
+
+    #[cfg(test)]
+    fn game_from_u16_id(&mut self, id: u16) {
+        self.game_handler.game_from_id(id);
+    }
 }
 
 impl Widget for &App {
@@ -132,9 +148,72 @@ impl Widget for &App {
 
         let mut lines: Vec<Line> = vec![];
 
-        let title_line = String::from("RustLibreCell              ");
+        if let Some(game) = self.game_handler.game.as_ref() {
+            let mut title_line = String::from("                           ");
+            let id = &game.id.to_string();
+            for _ in 0..(5 - id.len()) {
+                title_line += " ";
+            }
+            title_line += "#";
+            title_line += &id;
+            title_line += " ";
 
-        lines.push(Line::from(title_line));
+            lines.push(Line::from(title_line));
+
+            let mut cells_foundations_span: Vec<Span> = vec![];
+            for cell in &game.cells {
+                match cell {
+                    Some(card) => {
+                        cells_foundations_span.push(get_colored_representation(card));
+                    }
+                    None => {
+                        cells_foundations_span.push(" .. ".into());
+                    }
+                }
+            }
+
+            cells_foundations_span.push("||".into());
+
+            for foundation in &game.foundations {
+                match foundation.last() {
+                    Some(card) => {
+                        cells_foundations_span.push(get_colored_representation(card));
+                    }
+                    None => {
+                        cells_foundations_span.push(" .. ".into());
+                    }
+                }
+            }
+
+            lines.push(Line::from(cells_foundations_span));
+            lines.push(Line::from("--------------------------------- "));
+
+            let mut column_spans: Vec<Vec<Span>> = vec![vec![Span::from(" ")]; 19];
+
+            for i in 0..19 as usize {
+                for column in &game.columns {
+                    let card = column.get(i);
+                    match card {
+                        Some(card) => {
+                            column_spans[i].push(get_colored_representation(card));
+                        }
+                        None => {
+                            column_spans[i].push("    ".into());
+                        }
+                    }
+                }
+
+                column_spans[i].push(" ".into());
+            }
+
+            let mut column_lines: Vec<Line> = vec![];
+
+            for spans in column_spans {
+                column_lines.push(Line::from(spans));
+            }
+
+            lines.append(&mut column_lines);
+        }
 
         let board_text = Text::from(lines);
 
@@ -151,6 +230,11 @@ impl Widget for &App {
                 .title_bottom(instructions.centered());
 
             let mut help_lines: Vec<Line> = vec![];
+            help_lines.push(Line::from(vec![
+                "<F2>".blue(),
+                " to start a new random game.".into(),
+            ]));
+            help_lines.push(Line::from("\n"));
             help_lines.push(Line::from(vec![
                 "<q> <w> <e> <r>".blue(),
                 " - cells ".into(),
@@ -202,6 +286,14 @@ fn popup_area(area: Rect) -> Rect {
         y: area.y + 1,
         width: area.width - 4,
         height: area.height - 2,
+    }
+}
+
+fn get_colored_representation(card: &Card) -> Span<'_> {
+    let unstyled_span = <Span<'_>>::from(format!(" {c} ", c = card.to_string()));
+    match card.suit {
+        Suit::Clubs | Suit::Spades => return unstyled_span.into(),
+        Suit::Diamonds | Suit::Hearts => return unstyled_span.red(),
     }
 }
 
