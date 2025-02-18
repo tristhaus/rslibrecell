@@ -3,11 +3,11 @@ use std::io;
 use crossterm::event::{self, Event, KeyCode, KeyEvent, KeyEventKind, KeyModifiers};
 use ratatui::{
     buffer::Buffer,
-    layout::Rect,
+    layout::{Margin, Rect},
     style::Stylize,
     symbols::border,
     text::{Line, Text},
-    widgets::{Block, Clear, Paragraph, Widget},
+    widgets::{Block, Clear, Paragraph, Widget, Wrap},
     DefaultTerminal, Frame,
 };
 
@@ -149,9 +149,48 @@ impl Widget for &App {
             let block = Block::bordered()
                 .title(title.centered())
                 .title_bottom(instructions.centered());
+
+            let mut help_lines: Vec<Line> = vec![];
+            help_lines.push(Line::from(vec![
+                "<q> <w> <e> <r>".blue(),
+                " - cells ".into(),
+            ]));
+            help_lines.push(Line::from(vec![
+                "<u> <i> <o> <p>".blue(),
+                " - foundations ".into(),
+            ]));
+            help_lines.push(Line::from(vec![
+                "<a> <s> <d> <f>".blue(),
+                " - left columns ".into(),
+            ]));
+            help_lines.push(Line::from(vec![
+                "<j> <k> <l> <ö>".blue(),
+                " - right columns ".into(),
+            ]));
+            help_lines.push(Line::from("\n"));
+            help_lines.push(Line::from(vec![
+                "Make a move by choosing the start and end of a move. ".into(),
+                "<Space>".blue(),
+                " to abort a move. ".into(),
+                "<R>".blue(),
+                " to revert the last move.".into(),
+            ]));
+
+            let help_text = Text::from(help_lines);
+
             let area = popup_area(area);
             Clear::default().render(area, buf);
+
             block.render(area, buf);
+
+            let inner_area = area.inner(Margin {
+                horizontal: 2,
+                vertical: 1,
+            });
+
+            Paragraph::new(help_text)
+                .wrap(Wrap { trim: true })
+                .render(inner_area, buf);
         }
     }
 }

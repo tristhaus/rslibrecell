@@ -73,14 +73,14 @@ fn render_help_modal() {
     let mut expected = Buffer::with_lines(vec![
         "┏━━━━━━━━━━━━━━━━━ RSLibreCell ━━━━━━━━━━━━━━━━━━┓",
         "┃ ┌─────────────────── Help ───────────────────┐ ┃",
+        "┃ │ <q> <w> <e> <r> - cells                    │ ┃",
+        "┃ │ <u> <i> <o> <p> - foundations              │ ┃",
+        "┃ │ <a> <s> <d> <f> - left columns             │ ┃",
+        "┃ │ <j> <k> <l> <ö> - right columns            │ ┃",
         "┃ │                                            │ ┃",
-        "┃ │                                            │ ┃",
-        "┃ │                                            │ ┃",
-        "┃ │                                            │ ┃",
-        "┃ │                                            │ ┃",
-        "┃ │                                            │ ┃",
-        "┃ │                                            │ ┃",
-        "┃ │                                            │ ┃",
+        "┃ │ Make a move by choosing the start and end  │ ┃",
+        "┃ │ of a move. <Space> to abort a move. <R> to │ ┃",
+        "┃ │ revert the last move.                      │ ┃",
         "┃ │                                            │ ┃",
         "┃ │                                            │ ┃",
         "┃ │                                            │ ┃",
@@ -88,11 +88,20 @@ fn render_help_modal() {
         "┗━━━━━━━━━━━ Help <F1> Quit <CTRL-q> ━━━━━━━━━━━━┛",
     ]);
     let title_style = Style::new().bold();
-    let key_style = Style::new().blue().bold();
+    let key_style = Style::new().blue();
+    let key_style_bold = Style::new().blue().bold();
     expected.set_style(Rect::new(18, 0, 13, 1), title_style);
-    expected.set_style(Rect::new(18, 14, 4, 1), key_style);
-    expected.set_style(Rect::new(28, 14, 9, 1), key_style);
-    expected.set_style(Rect::new(25, 13, 6, 1), key_style);
+    expected.set_style(Rect::new(4, 2, 15, 1), key_style);
+    expected.set_style(Rect::new(4, 3, 15, 1), key_style);
+    expected.set_style(Rect::new(4, 4, 15, 1), key_style);
+    expected.set_style(Rect::new(4, 5, 15, 1), key_style);
+    
+    expected.set_style(Rect::new(15, 8, 7, 1), key_style);
+    expected.set_style(Rect::new(40, 8, 3, 1), key_style);
+
+    expected.set_style(Rect::new(25, 13, 6, 1), key_style_bold);
+    expected.set_style(Rect::new(18, 14, 4, 1), key_style_bold);
+    expected.set_style(Rect::new(28, 14, 9, 1), key_style_bold);
 
     assert_eq!(buf, expected);
 }
