@@ -90,7 +90,47 @@ pub(crate) fn apply(game: &Game, mv: Move) -> Result<Game, ()> {
 /// > * already placed on a foundation or
 /// > * can be placed there, once accessible
 pub(crate) fn automove(game: &Game) -> Option<Game> {
-    let check = |card: Card| -> bool {
+    let game = game.clone();
+
+    for (i, column) in game.columns.iter().enumerate() {
+        let card = match column.last() {
+            Some(card) => card,
+            None => continue,
+        };
+
+        if !check(&game, *card) {
+            continue;
+        }
+
+        let mv = Move {
+            from: Location::Column { i },
+            to: Location::Foundation,
+        };
+
+        return Some(apply(&game, mv).unwrap());
+    }
+
+    for (i, cell) in game.cells.iter().enumerate() {
+        let card = match cell {
+            Some(card) => card,
+            None => continue,
+        };
+
+        if !check(&game, *card) {
+            continue;
+        }
+
+        let mv = Move {
+            from: Location::Cell { i },
+            to: Location::Foundation,
+        };
+
+        return Some(apply(&game, mv).unwrap());
+    }
+
+    return None;
+
+    fn check(game: &Game, card: Card) -> bool {
         if card.rank == Rank::Ace {
             return true;
         }
@@ -151,47 +191,7 @@ pub(crate) fn automove(game: &Game) -> Option<Game> {
         return (own_foundation_rank - other_color_min_rank < 2)
             && (own_foundation_rank <= other_color_min_rank
                 || other_color_min_rank - other_foundation_same_color_rank < 2);
-    };
-
-    let game = game.clone();
-
-    for (i, column) in game.columns.iter().enumerate() {
-        let card = match column.last() {
-            Some(card) => card,
-            None => continue,
-        };
-
-        if !check(*card) {
-            continue;
-        }
-
-        let mv = Move {
-            from: Location::Column { i },
-            to: Location::Foundation,
-        };
-
-        return Some(apply(&game, mv).unwrap());
     }
-
-    for (i, cell) in game.cells.iter().enumerate() {
-        let card = match cell {
-            Some(card) => card,
-            None => continue,
-        };
-
-        if !check(*card) {
-            continue;
-        }
-
-        let mv = Move {
-            from: Location::Cell { i },
-            to: Location::Foundation,
-        };
-
-        return Some(apply(&game, mv).unwrap());
-    }
-
-    return None;
 }
 
 // `from`, `to` are indices
@@ -398,11 +398,7 @@ mod detail {
             return false;
         }
 
-        let is_red = |card: Card| -> bool {
-            return card.suit == Suit::Hearts || card.suit == Suit::Diamonds;
-        };
-
-        if is_red(*lower) == is_red(*upper) {
+        if is_red_func(*lower) == is_red_func(*upper) {
             return false;
         }
 
@@ -410,6 +406,10 @@ mod detail {
         let under_rank = lower.rank as u8;
 
         return over_rank - 1 == under_rank;
+
+        fn is_red_func(card: Card) -> bool {
+            card.suit == Suit::Hearts || card.suit == Suit::Diamonds
+        }
     }
 }
 
