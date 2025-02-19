@@ -20,10 +20,20 @@ impl GameHandler {
     }
 
     /// Replaces the currently held game and its history (if any)
-    /// with a random game defined by an ID in the range 1 to 64000.
+    /// with a random solvable game defined by an ID in the range 1 to 64000.
     pub fn random_game(&mut self) {
-        self.game = Some(Game::from_id(rand::rng().random_range(1..64001 as u16)));
-        self.history.clear();
+        // note that other known unsolvable games are currently out of scope
+        // they are: 146_692, 186_216, 455_889, 495_505, 512_118, 517_776, 781_948
+        const UNSOLVABLE_GAME: u16 = 11_982;
+
+        loop {
+            let candidate = rand::rng().random_range(1u16..64001u16);
+
+            if candidate != UNSOLVABLE_GAME {
+                self.game_from_id(candidate);
+                break;
+            }
+        }
     }
 
     /// Make a move on the currently held game.
