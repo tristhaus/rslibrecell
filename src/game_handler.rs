@@ -42,14 +42,8 @@ impl GameHandler {
 
         let mut new_state = new_state.unwrap();
 
-        loop {
-            let automoved = automove(&new_state);
-
-            if let Some(automoved) = automoved {
-                new_state = automoved
-            } else {
-                break;
-            }
+        while let Some(automoved) = automove(&new_state) {
+            new_state = automoved
         }
 
         self.game = Some(new_state);
