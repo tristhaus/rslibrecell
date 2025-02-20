@@ -1,10 +1,28 @@
+/*
+    RSLibreCell - a FreeCell implementation
+    Copyright (C) 2025 and later: tristhaus
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+*/
+
 use super::*;
 use crossterm::event::KeyModifiers;
 use ratatui::style::Style;
 
 #[test]
 fn render_startup() {
-    let app = App::new();
+    let mut app = App::new();
     let mut buf = Buffer::empty(Rect::new(0, 0, 50, 15));
 
     app.render(buf.area, &mut buf);
@@ -397,6 +415,7 @@ fn render_help_modal() {
     let mut expected = Buffer::with_lines(vec![
         "┏━━━━━━━━━━━━━━━━━ RSLibreCell ━━━━━━━━━━━━━━━━━━┓",
         "┃ ┌─────────────────── Help ───────────────────┐ ┃",
+        "┃ │ <F12> to show the About box.               │ ┃",
         "┃ │ <F2> to start a new random game.           │ ┃",
         "┃ │                                            │ ┃",
         "┃ │ <q> <w> <e> <r> - cells                    │ ┃",
@@ -407,7 +426,6 @@ fn render_help_modal() {
         "┃ │ Make a move by choosing the start and end  │ ┃",
         "┃ │ of a move. <Space> to abort a move. <R> to │ ┃",
         "┃ │ revert the last move.                      │ ┃",
-        "┃ │                                            │ ┃",
         "┃ └─────────────── Close <Esc> ────────────────┘ ┃",
         "┗━━━━━━━━━━━ Help <F1> Quit <CTRL-q> ━━━━━━━━━━━━┛",
     ]);
@@ -416,15 +434,16 @@ fn render_help_modal() {
         let key_style = Style::new().blue();
         let key_style_bold = Style::new().blue().bold();
         expected.set_style(Rect::new(18, 0, 13, 1), title_style);
-        expected.set_style(Rect::new(4, 2, 4, 1), key_style);
+        expected.set_style(Rect::new(4, 2, 5, 1), key_style);
+        expected.set_style(Rect::new(4, 3, 4, 1), key_style);
 
-        expected.set_style(Rect::new(4, 4, 15, 1), key_style);
         expected.set_style(Rect::new(4, 5, 15, 1), key_style);
         expected.set_style(Rect::new(4, 6, 15, 1), key_style);
         expected.set_style(Rect::new(4, 7, 15, 1), key_style);
+        expected.set_style(Rect::new(4, 8, 15, 1), key_style);
 
-        expected.set_style(Rect::new(15, 10, 7, 1), key_style);
-        expected.set_style(Rect::new(40, 10, 3, 1), key_style);
+        expected.set_style(Rect::new(15, 11, 7, 1), key_style);
+        expected.set_style(Rect::new(40, 11, 3, 1), key_style);
 
         expected.set_style(Rect::new(25, 13, 6, 1), key_style_bold);
         expected.set_style(Rect::new(18, 14, 4, 1), key_style_bold);
@@ -439,4 +458,182 @@ fn render_help_modal() {
 
     app.render(buf.area, &mut buf);
     assert_eq!(buf, expected);
+}
+
+#[test]
+fn handle_key_event_about_modal() {
+    let mut app = App::new();
+    app.handle_key_event(KeyCode::F(12).into());
+    assert_eq!(app.app_state, AppState::AboutModal { scroll: 0 });
+
+    app.handle_key_event(KeyCode::Down.into());
+    assert_eq!(app.app_state, AppState::AboutModal { scroll: 1 });
+
+    app.handle_key_event(KeyCode::Esc.into());
+    assert_eq!(app.app_state, AppState::Base);
+
+    app.handle_key_event(KeyCode::F(12).into());
+    assert_eq!(app.app_state, AppState::AboutModal { scroll: 0 });
+
+    app.handle_key_event(KeyCode::Down.into());
+    assert_eq!(app.app_state, AppState::AboutModal { scroll: 1 });
+
+    app.handle_key_event(KeyCode::Up.into());
+    assert_eq!(app.app_state, AppState::AboutModal { scroll: 0 });
+
+    let mut key: KeyEvent = KeyCode::Char('q').into();
+    key.modifiers = KeyModifiers::CONTROL;
+    app.handle_key_event(key);
+    assert_eq!(app.app_state, AppState::Exit);
+}
+
+#[test]
+fn switch_help_about() {
+    let mut app = App::new();
+    app.handle_key_event(KeyCode::F(1).into());
+    assert_eq!(app.app_state, AppState::HelpModal);
+
+    app.handle_key_event(KeyCode::F(12).into());
+    assert_eq!(app.app_state, AppState::AboutModal { scroll: 0 });
+
+    app.handle_key_event(KeyCode::Esc.into());
+    assert_eq!(app.app_state, AppState::Base);
+
+    app.handle_key_event(KeyCode::F(12).into());
+    assert_eq!(app.app_state, AppState::AboutModal { scroll: 0 });
+
+    app.handle_key_event(KeyCode::F(1).into());
+    assert_eq!(app.app_state, AppState::HelpModal);
+}
+
+#[test]
+fn render_about_modal() {
+    let mut app = App::new();
+    let mut buf0 = Buffer::empty(Rect::new(0, 0, 100, 15));
+    app.handle_key_event(KeyCode::F(12).into());
+
+    app.render(buf0.area, &mut buf0);
+
+    let mut expected0 = Buffer::with_lines(vec![
+        "┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ RSLibreCell ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓",
+        "┃ ┌─────────────────────────────────────────── About ────────────────────────────────────────────┐ ┃",
+        "┃ │ RSLibreCell - a FreeCell implementation                                                      │ ┃",
+        "┃ │                                                                                              │ ┃",
+        "┃ │ Copyright (c) tristhaus 2025 and later                                                       │ ┃",
+        "┃ │ https://www.github.com/tristhaus/rslibrecell                                                 │ ┃",
+        "┃ │                                                                                              │ ┃",
+        "┃ │ For help, press <F1>.                                                                        │ ┃",
+        "┃ │                                                                                              │ ┃",
+        "┃ │ RSLibreCell is free, libre, open-source software. License text below:                        │ ┃",
+        "┃ │                                                                                              │ ┃",
+        "┃ │  GNU GENERAL PUBLIC LICENSE                                                                  │ ┃",
+        "┃ │  Version 3, 29 June 2007                                                                     │ ┃",
+        "┃ └─────────────────────────────── Scroll <Up><Down> Close <Esc> ────────────────────────────────┘ ┃",
+        "┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ Help <F1> Quit <CTRL-q> ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛",
+    ]);
+    {
+        let title_style = Style::new().bold();
+        let key_style = Style::new().blue();
+        let key_style_bold = Style::new().blue().bold();
+        expected0.set_style(Rect::new(43, 0, 13, 1), title_style);
+        expected0.set_style(Rect::new(4, 2, 39, 1), title_style);
+
+        expected0.set_style(Rect::new(20, 7, 4, 1), key_style);
+
+        expected0.set_style(Rect::new(42, 13, 10, 1), key_style_bold);
+        expected0.set_style(Rect::new(59, 13, 6, 1), key_style_bold);
+        expected0.set_style(Rect::new(43, 14, 4, 1), key_style_bold);
+        expected0.set_style(Rect::new(53, 14, 9, 1), key_style_bold);
+    }
+
+    assert_eq!(buf0, expected0);
+
+    app.handle_key_event(KeyCode::Esc.into());
+    app.handle_key_event(KeyCode::F(2).into());
+    app.handle_key_event(KeyCode::F(12).into());
+
+    app.render(buf0.area, &mut buf0);
+    assert_eq!(buf0, expected0);
+
+    let mut buf1 = Buffer::empty(Rect::new(0, 0, 100, 15));
+
+    app.handle_key_event(KeyCode::Down.into());
+    app.render(buf1.area, &mut buf1);
+
+    let mut expected1 = Buffer::with_lines(vec![
+        "┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ RSLibreCell ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓",
+        "┃ ┌─────────────────────────────────────────── About ────────────────────────────────────────────┐ ┃",
+        "┃ │                                                                                              │ ┃",
+        "┃ │ Copyright (c) tristhaus 2025 and later                                                       │ ┃",
+        "┃ │ https://www.github.com/tristhaus/rslibrecell                                                 │ ┃",
+        "┃ │                                                                                              │ ┃",
+        "┃ │ For help, press <F1>.                                                                        │ ┃",
+        "┃ │                                                                                              │ ┃",
+        "┃ │ RSLibreCell is free, libre, open-source software. License text below:                        │ ┃",
+        "┃ │                                                                                              │ ┃",
+        "┃ │  GNU GENERAL PUBLIC LICENSE                                                                  │ ┃",
+        "┃ │  Version 3, 29 June 2007                                                                     │ ┃",
+        "┃ │                                                                                              │ ┃",
+        "┃ └─────────────────────────────── Scroll <Up><Down> Close <Esc> ────────────────────────────────┘ ┃",
+        "┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ Help <F1> Quit <CTRL-q> ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛",
+    ]);
+    {
+        let title_style = Style::new().bold();
+        let key_style = Style::new().blue();
+        let key_style_bold = Style::new().blue().bold();
+        expected1.set_style(Rect::new(43, 0, 13, 1), title_style);
+
+        expected1.set_style(Rect::new(20, 6, 4, 1), key_style);
+
+        expected1.set_style(Rect::new(42, 13, 10, 1), key_style_bold);
+        expected1.set_style(Rect::new(59, 13, 6, 1), key_style_bold);
+        expected1.set_style(Rect::new(43, 14, 4, 1), key_style_bold);
+        expected1.set_style(Rect::new(53, 14, 9, 1), key_style_bold);
+    }
+
+    assert_eq!(buf1, expected1);
+
+    for _ in 0..9999 {
+        app.handle_key_event(KeyCode::Down.into());
+    }
+
+    let mut buf2 = Buffer::empty(Rect::new(0, 0, 100, 15));
+
+    app.render(buf2.area, &mut buf2);
+
+    let mut expected2 = Buffer::with_lines(vec![
+        "┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ RSLibreCell ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓",
+        "┃ ┌─────────────────────────────────────────── About ────────────────────────────────────────────┐ ┃",
+        "┃ │ OTHER PARTY HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.                             │ ┃",
+        "┃ │                                                                                              │ ┃",
+        "┃ │   17. Interpretation of Sections 15 and 16.                                                  │ ┃",
+        "┃ │                                                                                              │ ┃",
+        "┃ │   If the disclaimer of warranty and limitation of liability provided above cannot be given   │ ┃",
+        "┃ │ local legal effect according to their terms, reviewing courts shall apply local law that     │ ┃",
+        "┃ │ most closely approximates an absolute waiver of all civil liability in connection with the   │ ┃",
+        "┃ │ Program, unless a warranty or assumption of liability accompanies a copy of the Program in   │ ┃",
+        "┃ │ return for a fee.                                                                            │ ┃",
+        "┃ │                                                                                              │ ┃",
+        "┃ │ END OF TERMS AND CONDITIONS                                                                  │ ┃",
+        "┃ └─────────────────────────────── Scroll <Up><Down> Close <Esc> ────────────────────────────────┘ ┃",
+        "┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ Help <F1> Quit <CTRL-q> ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛",
+    ]);
+    {
+        let title_style = Style::new().bold();
+        let key_style_bold = Style::new().blue().bold();
+        expected2.set_style(Rect::new(43, 0, 13, 1), title_style);
+
+        expected2.set_style(Rect::new(42, 13, 10, 1), key_style_bold);
+        expected2.set_style(Rect::new(59, 13, 6, 1), key_style_bold);
+        expected2.set_style(Rect::new(43, 14, 4, 1), key_style_bold);
+        expected2.set_style(Rect::new(53, 14, 9, 1), key_style_bold);
+    }
+
+    assert_eq!(buf2, expected2);
+
+    app.handle_key_event(KeyCode::Esc.into());
+    app.handle_key_event(KeyCode::F(12).into());
+
+    app.render(buf0.area, &mut buf0);
+    assert_eq!(buf0, expected0);
 }
