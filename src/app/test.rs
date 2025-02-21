@@ -23,12 +23,21 @@ use ratatui::style::Style;
 #[test]
 fn render_startup() {
     let mut app = App::new();
-    let mut buf = Buffer::empty(Rect::new(0, 0, 50, 15));
+    let mut buf = Buffer::empty(Rect::new(0, 0, 50, 24));
 
     app.render(buf.area, &mut buf);
 
     let mut expected = Buffer::with_lines(vec![
         "┏━━━━━━━━━━━━━━━━━ RSLibreCell ━━━━━━━━━━━━━━━━━━┓",
+        "┃                                                ┃",
+        "┃                                                ┃",
+        "┃                                                ┃",
+        "┃                                                ┃",
+        "┃                                                ┃",
+        "┃                                                ┃",
+        "┃                                                ┃",
+        "┃                                                ┃",
+        "┃                                                ┃",
         "┃                                                ┃",
         "┃                                                ┃",
         "┃                                                ┃",
@@ -48,11 +57,29 @@ fn render_startup() {
         let title_style = Style::new().bold();
         let key_style = Style::new().blue().bold();
         expected.set_style(Rect::new(18, 0, 13, 1), title_style);
-        expected.set_style(Rect::new(18, 14, 4, 1), key_style);
-        expected.set_style(Rect::new(28, 14, 9, 1), key_style);
+        expected.set_style(Rect::new(18, 23, 4, 1), key_style);
+        expected.set_style(Rect::new(28, 23, 9, 1), key_style);
     }
 
     assert_eq!(buf, expected);
+}
+
+#[test]
+#[should_panic]
+fn render_too_narrow_should_panic() {
+    let mut app = App::new();
+    let mut buf = Buffer::empty(Rect::new(0, 0, 31, 24));
+
+    app.render(buf.area, &mut buf);
+}
+
+#[test]
+#[should_panic]
+fn render_too_flat_should_panic() {
+    let mut app = App::new();
+    let mut buf = Buffer::empty(Rect::new(0, 0, 32, 23));
+
+    app.render(buf.area, &mut buf);
 }
 
 #[test]
@@ -65,14 +92,23 @@ fn handle_key_event_random_game() {
 #[test]
 fn render_random_games() {
     let mut app = App::new();
-    let mut buf0 = Buffer::empty(Rect::new(0, 0, 50, 15));
-    let mut buf1 = Buffer::empty(Rect::new(0, 0, 50, 15));
-    let mut buf2 = Buffer::empty(Rect::new(0, 0, 50, 15));
+    let mut buf0 = Buffer::empty(Rect::new(0, 0, 50, 24));
+    let mut buf1 = Buffer::empty(Rect::new(0, 0, 50, 24));
+    let mut buf2 = Buffer::empty(Rect::new(0, 0, 50, 24));
 
     app.render(buf0.area, &mut buf0);
 
     let mut initial_empty = Buffer::with_lines(vec![
         "┏━━━━━━━━━━━━━━━━━ RSLibreCell ━━━━━━━━━━━━━━━━━━┓",
+        "┃                                                ┃",
+        "┃                                                ┃",
+        "┃                                                ┃",
+        "┃                                                ┃",
+        "┃                                                ┃",
+        "┃                                                ┃",
+        "┃                                                ┃",
+        "┃                                                ┃",
+        "┃                                                ┃",
         "┃                                                ┃",
         "┃                                                ┃",
         "┃                                                ┃",
@@ -92,8 +128,8 @@ fn render_random_games() {
         let title_style = Style::new().bold();
         let key_style = Style::new().blue().bold();
         initial_empty.set_style(Rect::new(18, 0, 13, 1), title_style);
-        initial_empty.set_style(Rect::new(18, 14, 4, 1), key_style);
-        initial_empty.set_style(Rect::new(28, 14, 9, 1), key_style);
+        initial_empty.set_style(Rect::new(18, 23, 4, 1), key_style);
+        initial_empty.set_style(Rect::new(28, 23, 9, 1), key_style);
     }
 
     assert_eq!(buf0, initial_empty);
@@ -112,7 +148,7 @@ fn render_random_games() {
 #[test]
 fn render_fixed_game() {
     let mut app = App::new();
-    let mut buf = Buffer::empty(Rect::new(0, 0, 50, 15));
+    let mut buf = Buffer::empty(Rect::new(0, 0, 50, 24));
     app.game_from_u16_id(1);
 
     app.render(buf.area, &mut buf);
@@ -121,7 +157,7 @@ fn render_fixed_game() {
         "┏━━━━━━━━━━━━━━━━━ RSLibreCell ━━━━━━━━━━━━━━━━━━┓",
         "┃                                      #1        ┃",
         "┃        ..  ..  ..  .. || ..  ..  ..  ..        ┃",
-        "┃       ---------------------------------        ┃",
+        "┃       ----------------------------------       ┃",
         "┃         J♦  2♦  9♥  J♣  5♦  7♥  7♣  5♥         ┃",
         "┃         K♦  K♣  9♠  5♠  A♦  Q♣  K♥  3♥         ┃",
         "┃         2♠  K♠  9♦  Q♦  J♠  A♠  A♥  3♣         ┃",
@@ -132,14 +168,23 @@ fn render_fixed_game() {
         "┃                                                ┃",
         "┃                                                ┃",
         "┃                                                ┃",
+        "┃                                                ┃",
+        "┃                                                ┃",
+        "┃                                                ┃",
+        "┃                                                ┃",
+        "┃                                                ┃",
+        "┃                                                ┃",
+        "┃                                                ┃",
+        "┃                                                ┃",
+        "┃                                                ┃",
         "┗━━━━━━━━━━━ Help <F1> Quit <CTRL-q> ━━━━━━━━━━━━┛",
     ]);
     {
         let title_style = Style::new().bold();
         let key_style = Style::new().blue().bold();
         expected.set_style(Rect::new(18, 0, 13, 1), title_style);
-        expected.set_style(Rect::new(18, 14, 4, 1), key_style);
-        expected.set_style(Rect::new(28, 14, 9, 1), key_style);
+        expected.set_style(Rect::new(18, 23, 4, 1), key_style);
+        expected.set_style(Rect::new(28, 23, 9, 1), key_style);
 
         let red_style = Style::new().red();
         expected.set_style(Rect::new(9, 4, 4, 1), red_style);
@@ -183,7 +228,7 @@ fn render_fixed_game() {
 #[test]
 fn render_fixed_game_use_game_keys() {
     let mut app = App::new();
-    let mut buf = Buffer::empty(Rect::new(0, 0, 50, 15));
+    let mut buf = Buffer::empty(Rect::new(0, 0, 50, 24));
     app.game_from_u16_id(1);
 
     app.handle_key_event(KeyCode::Char('k').into());
@@ -198,7 +243,7 @@ fn render_fixed_game_use_game_keys() {
         "┏━━━━━━━━━━━━━━━━━ RSLibreCell ━━━━━━━━━━━━━━━━━━┓",
         "┃                                      #1        ┃",
         "┃        3♦  ..  ..  .. || 2♣  A♠  ..  ..        ┃",
-        "┃       ---------------------------------        ┃",
+        "┃       ----------------------------------       ┃",
         "┃         J♦  2♦  9♥  J♣  5♦  7♥  7♣  5♥         ┃",
         "┃         K♦  K♣  9♠  5♠  A♦  Q♣  K♥  3♥         ┃",
         "┃         2♠  K♠  9♦  Q♦  J♠      A♥  3♣         ┃",
@@ -209,14 +254,23 @@ fn render_fixed_game_use_game_keys() {
         "┃                                                ┃",
         "┃                                                ┃",
         "┃                                                ┃",
+        "┃                                                ┃",
+        "┃                                                ┃",
+        "┃                                                ┃",
+        "┃                                                ┃",
+        "┃                                                ┃",
+        "┃                                                ┃",
+        "┃                                                ┃",
+        "┃                                                ┃",
+        "┃                                                ┃",
         "┗━━━━━━━━━━━ Help <F1> Quit <CTRL-q> ━━━━━━━━━━━━┛",
     ]);
     {
         let title_style = Style::new().bold();
         let key_style = Style::new().blue().bold();
         expected.set_style(Rect::new(18, 0, 13, 1), title_style);
-        expected.set_style(Rect::new(18, 14, 4, 1), key_style);
-        expected.set_style(Rect::new(28, 14, 9, 1), key_style);
+        expected.set_style(Rect::new(18, 23, 4, 1), key_style);
+        expected.set_style(Rect::new(28, 23, 9, 1), key_style);
 
         let red_style = Style::new().red();
         expected.set_style(Rect::new(8, 2, 4, 1), red_style);
@@ -263,7 +317,7 @@ fn render_fixed_game_use_game_keys() {
         "┏━━━━━━━━━━━━━━━━━ RSLibreCell ━━━━━━━━━━━━━━━━━━┓",
         "┃                                      #1        ┃",
         "┃        3♦  6♠  ..  .. || 2♣  A♠  ..  ..        ┃",
-        "┃       ---------------------------------        ┃",
+        "┃       ----------------------------------       ┃",
         "┃         J♦  2♦  9♥  J♣  5♦  7♥  7♣  5♥         ┃",
         "┃         K♦  K♣  9♠  5♠  A♦  Q♣  K♥  3♥         ┃",
         "┃         2♠  K♠  9♦  Q♦  J♠      A♥  3♣         ┃",
@@ -274,14 +328,23 @@ fn render_fixed_game_use_game_keys() {
         "┃                                                ┃",
         "┃                                                ┃",
         "┃                                                ┃",
+        "┃                                                ┃",
+        "┃                                                ┃",
+        "┃                                                ┃",
+        "┃                                                ┃",
+        "┃                                                ┃",
+        "┃                                                ┃",
+        "┃                                                ┃",
+        "┃                                                ┃",
+        "┃                                                ┃",
         "┗━━━━━━━━━━━ Help <F1> Quit <CTRL-q> ━━━━━━━━━━━━┛",
     ]);
     {
         let title_style = Style::new().bold();
         let key_style = Style::new().blue().bold();
         expected.set_style(Rect::new(18, 0, 13, 1), title_style);
-        expected.set_style(Rect::new(18, 14, 4, 1), key_style);
-        expected.set_style(Rect::new(28, 14, 9, 1), key_style);
+        expected.set_style(Rect::new(18, 23, 4, 1), key_style);
+        expected.set_style(Rect::new(28, 23, 9, 1), key_style);
 
         let red_style = Style::new().red();
         expected.set_style(Rect::new(8, 2, 4, 1), red_style);
@@ -325,7 +388,7 @@ fn render_fixed_game_use_game_keys() {
         "┏━━━━━━━━━━━━━━━━━ RSLibreCell ━━━━━━━━━━━━━━━━━━┓",
         "┃                                      #1        ┃",
         "┃        3♦  ..  ..  .. || 2♣  A♠  ..  ..        ┃",
-        "┃       ---------------------------------        ┃",
+        "┃       ----------------------------------       ┃",
         "┃         J♦  2♦  9♥  J♣  5♦  7♥  7♣  5♥         ┃",
         "┃         K♦  K♣  9♠  5♠  A♦  Q♣  K♥  3♥         ┃",
         "┃         2♠  K♠  9♦  Q♦  J♠      A♥  3♣         ┃",
@@ -336,14 +399,23 @@ fn render_fixed_game_use_game_keys() {
         "┃                                                ┃",
         "┃                                                ┃",
         "┃                                                ┃",
+        "┃                                                ┃",
+        "┃                                                ┃",
+        "┃                                                ┃",
+        "┃                                                ┃",
+        "┃                                                ┃",
+        "┃                                                ┃",
+        "┃                                                ┃",
+        "┃                                                ┃",
+        "┃                                                ┃",
         "┗━━━━━━━━━━━ Help <F1> Quit <CTRL-q> ━━━━━━━━━━━━┛",
     ]);
     {
         let title_style = Style::new().bold();
         let key_style = Style::new().blue().bold();
         expected.set_style(Rect::new(18, 0, 13, 1), title_style);
-        expected.set_style(Rect::new(18, 14, 4, 1), key_style);
-        expected.set_style(Rect::new(28, 14, 9, 1), key_style);
+        expected.set_style(Rect::new(18, 23, 4, 1), key_style);
+        expected.set_style(Rect::new(28, 23, 9, 1), key_style);
 
         let red_style = Style::new().red();
         expected.set_style(Rect::new(8, 2, 4, 1), red_style);
@@ -407,7 +479,7 @@ fn handle_key_event_help_modal() {
 #[test]
 fn render_help_modal() {
     let mut app = App::new();
-    let mut buf = Buffer::empty(Rect::new(0, 0, 50, 15));
+    let mut buf = Buffer::empty(Rect::new(0, 0, 50, 24));
     app.handle_key_event(KeyCode::F(1).into());
 
     app.render(buf.area, &mut buf);
@@ -426,6 +498,15 @@ fn render_help_modal() {
         "┃ │ Make a move by choosing the start and end  │ ┃",
         "┃ │ of a move. <Space> to abort a move. <R> to │ ┃",
         "┃ │ revert the last move.                      │ ┃",
+        "┃ │                                            │ ┃",
+        "┃ │                                            │ ┃",
+        "┃ │                                            │ ┃",
+        "┃ │                                            │ ┃",
+        "┃ │                                            │ ┃",
+        "┃ │                                            │ ┃",
+        "┃ │                                            │ ┃",
+        "┃ │                                            │ ┃",
+        "┃ │                                            │ ┃",
         "┃ └─────────────── Close <Esc> ────────────────┘ ┃",
         "┗━━━━━━━━━━━ Help <F1> Quit <CTRL-q> ━━━━━━━━━━━━┛",
     ]);
@@ -445,9 +526,9 @@ fn render_help_modal() {
         expected.set_style(Rect::new(15, 11, 7, 1), key_style);
         expected.set_style(Rect::new(40, 11, 3, 1), key_style);
 
-        expected.set_style(Rect::new(25, 13, 6, 1), key_style_bold);
-        expected.set_style(Rect::new(18, 14, 4, 1), key_style_bold);
-        expected.set_style(Rect::new(28, 14, 9, 1), key_style_bold);
+        expected.set_style(Rect::new(25, 22, 6, 1), key_style_bold);
+        expected.set_style(Rect::new(18, 23, 4, 1), key_style_bold);
+        expected.set_style(Rect::new(28, 23, 9, 1), key_style_bold);
     }
 
     assert_eq!(buf, expected);
@@ -509,7 +590,7 @@ fn switch_help_about() {
 #[test]
 fn render_about_modal() {
     let mut app = App::new();
-    let mut buf0 = Buffer::empty(Rect::new(0, 0, 100, 15));
+    let mut buf0 = Buffer::empty(Rect::new(0, 0, 100, 24));
     app.handle_key_event(KeyCode::F(12).into());
 
     app.render(buf0.area, &mut buf0);
@@ -528,6 +609,15 @@ fn render_about_modal() {
         "┃ │                                                                                              │ ┃",
         "┃ │  GNU GENERAL PUBLIC LICENSE                                                                  │ ┃",
         "┃ │  Version 3, 29 June 2007                                                                     │ ┃",
+        "┃ │                                                                                              │ ┃",
+        "┃ │  Copyright (C) 2007 Free Software Foundation, Inc. <https://fsf.org/> Everyone is permitted  │ ┃",
+        "┃ │ to copy and distribute verbatim copies of this license document, but changing it is not      │ ┃",
+        "┃ │ allowed.                                                                                     │ ┃",
+        "┃ │                                                                                              │ ┃",
+        "┃ │ Preamble                                                                                     │ ┃",
+        "┃ │                                                                                              │ ┃",
+        "┃ │   The GNU General Public License is a free, copyleft license for software and other kinds of │ ┃",
+        "┃ │ works.                                                                                       │ ┃",
         "┃ └─────────────────────────────── Scroll <Up><Down> Close <Esc> ────────────────────────────────┘ ┃",
         "┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ Help <F1> Quit <CTRL-q> ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛",
     ]);
@@ -540,10 +630,10 @@ fn render_about_modal() {
 
         expected0.set_style(Rect::new(20, 7, 4, 1), key_style);
 
-        expected0.set_style(Rect::new(42, 13, 10, 1), key_style_bold);
-        expected0.set_style(Rect::new(59, 13, 6, 1), key_style_bold);
-        expected0.set_style(Rect::new(43, 14, 4, 1), key_style_bold);
-        expected0.set_style(Rect::new(53, 14, 9, 1), key_style_bold);
+        expected0.set_style(Rect::new(42, 22, 10, 1), key_style_bold);
+        expected0.set_style(Rect::new(59, 22, 6, 1), key_style_bold);
+        expected0.set_style(Rect::new(43, 23, 4, 1), key_style_bold);
+        expected0.set_style(Rect::new(53, 23, 9, 1), key_style_bold);
     }
 
     assert_eq!(buf0, expected0);
@@ -555,7 +645,7 @@ fn render_about_modal() {
     app.render(buf0.area, &mut buf0);
     assert_eq!(buf0, expected0);
 
-    let mut buf1 = Buffer::empty(Rect::new(0, 0, 100, 15));
+    let mut buf1 = Buffer::empty(Rect::new(0, 0, 100, 24));
 
     app.handle_key_event(KeyCode::Down.into());
     app.render(buf1.area, &mut buf1);
@@ -574,6 +664,15 @@ fn render_about_modal() {
         "┃ │  GNU GENERAL PUBLIC LICENSE                                                                  │ ┃",
         "┃ │  Version 3, 29 June 2007                                                                     │ ┃",
         "┃ │                                                                                              │ ┃",
+        "┃ │  Copyright (C) 2007 Free Software Foundation, Inc. <https://fsf.org/> Everyone is permitted  │ ┃",
+        "┃ │ to copy and distribute verbatim copies of this license document, but changing it is not      │ ┃",
+        "┃ │ allowed.                                                                                     │ ┃",
+        "┃ │                                                                                              │ ┃",
+        "┃ │ Preamble                                                                                     │ ┃",
+        "┃ │                                                                                              │ ┃",
+        "┃ │   The GNU General Public License is a free, copyleft license for software and other kinds of │ ┃",
+        "┃ │ works.                                                                                       │ ┃",
+        "┃ │                                                                                              │ ┃",
         "┃ └─────────────────────────────── Scroll <Up><Down> Close <Esc> ────────────────────────────────┘ ┃",
         "┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ Help <F1> Quit <CTRL-q> ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛",
     ]);
@@ -585,10 +684,10 @@ fn render_about_modal() {
 
         expected1.set_style(Rect::new(20, 6, 4, 1), key_style);
 
-        expected1.set_style(Rect::new(42, 13, 10, 1), key_style_bold);
-        expected1.set_style(Rect::new(59, 13, 6, 1), key_style_bold);
-        expected1.set_style(Rect::new(43, 14, 4, 1), key_style_bold);
-        expected1.set_style(Rect::new(53, 14, 9, 1), key_style_bold);
+        expected1.set_style(Rect::new(42, 22, 10, 1), key_style_bold);
+        expected1.set_style(Rect::new(59, 22, 6, 1), key_style_bold);
+        expected1.set_style(Rect::new(43, 23, 4, 1), key_style_bold);
+        expected1.set_style(Rect::new(53, 23, 9, 1), key_style_bold);
     }
 
     assert_eq!(buf1, expected1);
@@ -597,13 +696,22 @@ fn render_about_modal() {
         app.handle_key_event(KeyCode::Down.into());
     }
 
-    let mut buf2 = Buffer::empty(Rect::new(0, 0, 100, 15));
+    let mut buf2 = Buffer::empty(Rect::new(0, 0, 100, 24));
 
     app.render(buf2.area, &mut buf2);
 
     let mut expected2 = Buffer::with_lines(vec![
         "┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ RSLibreCell ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓",
         "┃ ┌─────────────────────────────────────────── About ────────────────────────────────────────────┐ ┃",
+        "┃ │                                                                                              │ ┃",
+        "┃ │   16. Limitation of Liability.                                                               │ ┃",
+        "┃ │                                                                                              │ ┃",
+        "┃ │   IN NO EVENT UNLESS REQUIRED BY APPLICABLE LAW OR AGREED TO IN WRITING WILL ANY COPYRIGHT   │ ┃",
+        "┃ │ HOLDER, OR ANY OTHER PARTY WHO MODIFIES AND/OR CONVEYS THE PROGRAM AS PERMITTED ABOVE, BE    │ ┃",
+        "┃ │ LIABLE TO YOU FOR DAMAGES, INCLUDING ANY GENERAL, SPECIAL, INCIDENTAL OR CONSEQUENTIAL       │ ┃",
+        "┃ │ DAMAGES ARISING OUT OF THE USE OR INABILITY TO USE THE PROGRAM (INCLUDING BUT NOT LIMITED TO │ ┃",
+        "┃ │ LOSS OF DATA OR DATA BEING RENDERED INACCURATE OR LOSSES SUSTAINED BY YOU OR THIRD PARTIES   │ ┃",
+        "┃ │ OR A FAILURE OF THE PROGRAM TO OPERATE WITH ANY OTHER PROGRAMS), EVEN IF SUCH HOLDER OR      │ ┃",
         "┃ │ OTHER PARTY HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.                             │ ┃",
         "┃ │                                                                                              │ ┃",
         "┃ │   17. Interpretation of Sections 15 and 16.                                                  │ ┃",
@@ -623,10 +731,10 @@ fn render_about_modal() {
         let key_style_bold = Style::new().blue().bold();
         expected2.set_style(Rect::new(43, 0, 13, 1), title_style);
 
-        expected2.set_style(Rect::new(42, 13, 10, 1), key_style_bold);
-        expected2.set_style(Rect::new(59, 13, 6, 1), key_style_bold);
-        expected2.set_style(Rect::new(43, 14, 4, 1), key_style_bold);
-        expected2.set_style(Rect::new(53, 14, 9, 1), key_style_bold);
+        expected2.set_style(Rect::new(42, 22, 10, 1), key_style_bold);
+        expected2.set_style(Rect::new(59, 22, 6, 1), key_style_bold);
+        expected2.set_style(Rect::new(43, 23, 4, 1), key_style_bold);
+        expected2.set_style(Rect::new(53, 23, 9, 1), key_style_bold);
     }
 
     assert_eq!(buf2, expected2);

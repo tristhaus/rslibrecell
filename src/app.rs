@@ -242,6 +242,10 @@ impl App {
 
 impl Widget for &mut App {
     fn render(self, area: Rect, buf: &mut Buffer) {
+        if area.width < 32 || area.height < 24 {
+            panic!("RSLibreCell needs at least 32 columns and 24 lines in the terminal");
+        }
+
         let title = Line::from(" RSLibreCell ".bold());
         let instructions = Line::from(vec![
             " Help ".into(),
@@ -324,7 +328,7 @@ mod render {
         }
 
         lines.push(Line::from(cells_foundations_span));
-        lines.push(Line::from("--------------------------------- "));
+        lines.push(Line::from("----------------------------------"));
 
         let mut column_spans: Vec<Vec<Span>> = vec![vec![Span::from(" ")]; 19];
 
