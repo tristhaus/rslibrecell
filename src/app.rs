@@ -50,12 +50,16 @@ enum AppState {
 /// The actual app.
 #[derive(Debug)]
 pub struct App {
+    /// The current state of the app.
     app_state: AppState,
+    /// An instance of a game handler.
     game_handler: GameHandler,
+    /// The first part of a move as entered by the user, if any.
     move_from: Option<Location>,
 }
 
 impl App {
+    /// Creates and initializes the app.
     pub fn new() -> App {
         App {
             app_state: AppState::Base,
@@ -82,7 +86,7 @@ impl App {
         frame.render_widget(self, frame.area());
     }
 
-    /// Updates the application's state based on user input.
+    /// Entry point for the handling of events, such as keyboard user input.
     fn handle_events(&mut self) -> io::Result<()> {
         match event::read()? {
             // it's important to check that the event is a key press event as
@@ -105,6 +109,7 @@ impl App {
         };
     }
 
+    /// Handles key events when in base state.
     fn handle_key_event_base(&mut self, key_event: KeyEvent) {
         match key_event.code {
             KeyCode::Char('q') if key_event.modifiers.contains(KeyModifiers::CONTROL) => {
@@ -117,6 +122,7 @@ impl App {
         }
     }
 
+    /// Handles keys related to the actual game in the base state.
     fn handle_key_event_game(&mut self, key_event: KeyEvent) {
         match key_event.code {
             KeyCode::Char('q') => self.register_partial_move(Location::Cell { i: 0 }),
@@ -140,6 +146,7 @@ impl App {
         }
     }
 
+    /// Handles key events when the help modal is active.
     fn handle_key_event_help_modal(&mut self, key_event: KeyEvent) {
         match key_event.code {
             KeyCode::Char('q') if key_event.modifiers.contains(KeyModifiers::CONTROL) => {
@@ -155,6 +162,7 @@ impl App {
         }
     }
 
+    /// Handles key events when the about modal is active.
     fn handle_key_event_about_modal(&mut self, key_event: KeyEvent) {
         match key_event.code {
             KeyCode::Char('q') if key_event.modifiers.contains(KeyModifiers::CONTROL) => {
@@ -176,26 +184,32 @@ impl App {
         }
     }
 
+    /// Starts a random game.
     fn random_game(&mut self) {
         self.game_handler.random_game();
     }
 
+    /// Switches to base state.
     fn base(&mut self) {
         self.app_state = AppState::Base;
     }
 
+    /// Begins exiting the app.
     fn exit(&mut self) {
         self.app_state = AppState::Exit;
     }
 
+    /// Switches to help modal.
     fn help_modal(&mut self) {
         self.app_state = AppState::HelpModal;
     }
 
+    /// Switches to about modal.
     fn about_modal(&mut self) {
         self.app_state = AppState::AboutModal { scroll: 0 };
     }
 
+    /// Changes the scoll value for the about modal.
     fn about_modal_scroll(&mut self, down: bool) {
         if let AppState::AboutModal { scroll: old_scroll } = self.app_state {
             if down {
@@ -215,6 +229,8 @@ impl App {
         self.game_handler.game_from_id(id);
     }
 
+    /// Register one half of a move, and executes a move,
+    /// if completed.
     fn register_partial_move(&mut self, location: Location) {
         match &self.move_from {
             Some(first) => {
@@ -230,10 +246,12 @@ impl App {
         }
     }
 
+    /// Removes a registered half-move, if any.
     fn clear_move(&mut self) {
         self.move_from = None;
     }
 
+    /// Reverts the previous, completed move.
     fn revert(&mut self) {
         self.move_from = None;
         let _ = self.game_handler.revert();
@@ -241,6 +259,7 @@ impl App {
 }
 
 impl Widget for &mut App {
+    /// Entry point for the rendering.
     fn render(self, area: Rect, buf: &mut Buffer) {
         if area.width < 32 || area.height < 24 {
             panic!("RSLibreCell needs at least 32 columns and 24 lines in the terminal");
@@ -261,7 +280,7 @@ impl Widget for &mut App {
         let mut lines: Vec<Line> = vec![];
 
         if let Some(game) = self.game_handler.game.as_ref() {
-            render::render_game(&mut lines, game);
+            render::provide_game_lines(&mut lines, game);
         }
 
         let board_text = Text::from(lines);
@@ -292,7 +311,8 @@ mod render {
 
     use super::*;
 
-    pub fn render_game<'a>(lines: &mut Vec<Line<'a>>, game: &'a Game) {
+    /// Provides the lines for the inner game board.
+    pub fn provide_game_lines<'a>(lines: &mut Vec<Line<'a>>, game: &'a Game) {
         let mut title_line = String::from("                           ");
         let id = &game.id.to_string();
         for _ in 0..(5 - id.len()) {
@@ -364,6 +384,7 @@ mod render {
         }
     }
 
+    /// Renders the help modal.
     pub fn render_help_modal(area: Rect, buf: &mut Buffer) {
         let title = Line::from(" Help ");
         let instructions = Line::from(vec![" Close ".into(), "<Esc> ".blue().bold()]);
@@ -423,6 +444,7 @@ mod render {
             .render(inner_area, buf);
     }
 
+    /// Renders the about modal.
     pub fn render_about_modal<F>(area: Rect, buf: &mut Buffer, scroll: u16, set_scroll: &mut F)
     where
         F: FnMut(u16) -> (),
@@ -467,6 +489,7 @@ mod render {
             .render(inner_area, buf);
     }
 
+    /// Creates the about text.
     fn create_about_text<'a>() -> Vec<Line<'a>> {
         vec![
             Line::from(vec!["RSLibreCell - a FreeCell implementation".bold()]),
@@ -699,7 +722,7 @@ mod render {
         ]
     }
 
-    /// helper function to create a centered rect using up certain percentage of the available rect `r`
+    /// helper function to create a centered rect with a fixed margin.
     fn popup_area(area: Rect) -> Rect {
         Rect {
             x: area.x + 2,
@@ -709,6 +732,7 @@ mod render {
         }
     }
 
+    /// Gets the colored representation of a card.
     fn get_colored_representation(card: &Card) -> Span<'_> {
         let unstyled_span = <Span<'_>>::from(format!(" {c} ", c = card.to_string()));
         match card.suit {
