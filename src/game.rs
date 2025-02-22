@@ -273,7 +273,7 @@ impl Game {
 
     /// Returns a flag indicating whether the game is won,
     /// *i.e.* all cards are on the foundations.
-    pub(crate) fn is_won(&self) -> bool {
+    pub fn is_won(&self) -> bool {
         let count: usize = self.foundations.iter().fold(0, |acc, x| acc + x.len());
 
         count == 52

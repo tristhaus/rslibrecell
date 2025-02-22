@@ -288,9 +288,11 @@ impl Widget for &mut App {
 }
 
 mod render {
+    use rslibrecell::game::Game;
+
     use super::*;
 
-    pub fn render_game<'a>(lines: &mut Vec<Line<'a>>, game: &'a rslibrecell::game::Game) {
+    pub fn render_game<'a>(lines: &mut Vec<Line<'a>>, game: &'a Game) {
         let mut title_line = String::from("                           ");
         let id = &game.id.to_string();
         for _ in 0..(5 - id.len()) {
@@ -330,31 +332,36 @@ mod render {
         lines.push(Line::from(cells_foundations_span));
         lines.push(Line::from("----------------------------------"));
 
-        let mut column_spans: Vec<Vec<Span>> = vec![vec![Span::from(" ")]; 19];
+        if game.is_won() {
+            lines.push(Line::from(""));
+            lines.push(Line::from("Congratulations, you won!"));
+        } else {
+            let mut column_spans: Vec<Vec<Span>> = vec![vec![Span::from(" ")]; 19];
 
-        for i in 0..19 as usize {
-            for column in &game.columns {
-                let card = column.get(i);
-                match card {
-                    Some(card) => {
-                        column_spans[i].push(get_colored_representation(card));
-                    }
-                    None => {
-                        column_spans[i].push("    ".into());
+            for i in 0..19 as usize {
+                for column in &game.columns {
+                    let card = column.get(i);
+                    match card {
+                        Some(card) => {
+                            column_spans[i].push(get_colored_representation(card));
+                        }
+                        None => {
+                            column_spans[i].push("    ".into());
+                        }
                     }
                 }
+
+                column_spans[i].push(" ".into());
             }
 
-            column_spans[i].push(" ".into());
+            let mut column_lines: Vec<Line> = vec![];
+
+            for spans in column_spans {
+                column_lines.push(Line::from(spans));
+            }
+
+            lines.append(&mut column_lines);
         }
-
-        let mut column_lines: Vec<Line> = vec![];
-
-        for spans in column_spans {
-            column_lines.push(Line::from(spans));
-        }
-
-        lines.append(&mut column_lines);
     }
 
     pub fn render_help_modal(area: Rect, buf: &mut Buffer) {

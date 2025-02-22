@@ -450,6 +450,151 @@ fn render_fixed_game_use_game_keys() {
 }
 
 #[test]
+fn render_fixed_won_game() {
+    let mut app = App::new();
+    let mut buf = Buffer::empty(Rect::new(0, 0, 50, 24));
+    app.game_from_u16_id(100);
+
+    let mut punch_key = |key: char| {
+        app.handle_key_event(KeyCode::Char(key).into());
+    };
+
+    punch_key('l');
+    punch_key('s');
+
+    punch_key('l');
+    punch_key('q');
+
+    punch_key('a');
+    punch_key('l');
+
+    punch_key('j');
+    punch_key('l');
+
+    punch_key('l');
+    punch_key('j');
+
+    punch_key('a');
+    punch_key('i');
+
+    punch_key('a');
+    punch_key('j');
+
+    punch_key('a');
+    punch_key('l');
+
+    punch_key('a');
+    punch_key('w');
+
+    punch_key('l');
+    punch_key('a');
+
+    punch_key('l');
+    punch_key('a');
+
+    punch_key('j');
+    punch_key('a');
+
+    punch_key('ö');
+    punch_key('e');
+
+    punch_key('s');
+    punch_key('l');
+
+    punch_key('ö');
+    punch_key('r');
+
+    punch_key('k');
+    punch_key('d');
+
+    punch_key('f');
+    punch_key('k');
+
+    punch_key('f');
+    punch_key('e');
+
+    punch_key('j');
+    punch_key('ö');
+
+    punch_key('f');
+    punch_key('ö');
+
+    punch_key('j');
+    punch_key('ö');
+
+    punch_key('k');
+    punch_key('ö');
+
+    punch_key('e');
+    punch_key('f');
+
+    punch_key('r');
+    punch_key('f');
+
+    punch_key('d');
+    punch_key('j');
+
+    punch_key('d');
+    punch_key('e');
+
+    punch_key('d');
+    punch_key('l');
+
+    punch_key('d');
+    punch_key('f');
+
+    punch_key('d');
+    punch_key('r');
+
+    punch_key('k');
+    punch_key('d');
+
+    punch_key('s');
+    punch_key('q');
+
+    app.render(buf.area, &mut buf);
+
+    let mut expected = Buffer::with_lines(vec![
+        "┏━━━━━━━━━━━━━━━━━ RSLibreCell ━━━━━━━━━━━━━━━━━━┓",
+        "┃                                    #100        ┃",
+        "┃        ..  ..  ..  .. || K♣  K♠  K♥  K♦        ┃",
+        "┃       ----------------------------------       ┃",
+        "┃                                                ┃",
+        "┃            Congratulations, you won!           ┃",
+        "┃                                                ┃",
+        "┃                                                ┃",
+        "┃                                                ┃",
+        "┃                                                ┃",
+        "┃                                                ┃",
+        "┃                                                ┃",
+        "┃                                                ┃",
+        "┃                                                ┃",
+        "┃                                                ┃",
+        "┃                                                ┃",
+        "┃                                                ┃",
+        "┃                                                ┃",
+        "┃                                                ┃",
+        "┃                                                ┃",
+        "┃                                                ┃",
+        "┃                                                ┃",
+        "┃                                                ┃",
+        "┗━━━━━━━━━━━ Help <F1> Quit <CTRL-q> ━━━━━━━━━━━━┛",
+    ]);
+    {
+        let title_style = Style::new().bold();
+        let key_style = Style::new().blue().bold();
+        expected.set_style(Rect::new(18, 0, 13, 1), title_style);
+        expected.set_style(Rect::new(18, 23, 4, 1), key_style);
+        expected.set_style(Rect::new(28, 23, 9, 1), key_style);
+
+        let red_style = Style::new().red();
+        expected.set_style(Rect::new(34, 2, 8, 1), red_style);
+    }
+
+    assert_eq!(buf, expected);
+}
+
+#[test]
 fn handle_key_event_quit() {
     let mut app = App::new();
     let mut key: KeyEvent = KeyCode::Char('q').into();
