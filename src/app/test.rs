@@ -85,8 +85,10 @@ fn render_too_flat_should_panic() {
 #[test]
 fn handle_key_event_random_game() {
     let mut app = App::new();
+    assert!(app.game_handler.game.is_none());
     app.handle_key_event(KeyCode::F(2).into());
     assert_eq!(app.app_state, AppState::Base);
+    assert!(app.game_handler.game.is_some());
 }
 
 #[test]
@@ -634,6 +636,7 @@ fn render_help_modal() {
         "┃ ┌─────────────────── Help ───────────────────┐ ┃",
         "┃ │ <F12> to show the About box.               │ ┃",
         "┃ │ <F2> to start a new random game.           │ ┃",
+        "┃ │ <F3> to choose a game to start.            │ ┃",
         "┃ │                                            │ ┃",
         "┃ │ <q> <w> <e> <r> - cells                    │ ┃",
         "┃ │ <u> <i> <o> <p> - foundations              │ ┃",
@@ -643,7 +646,6 @@ fn render_help_modal() {
         "┃ │ Make a move by choosing the start and end  │ ┃",
         "┃ │ of a move. <Space> to abort a move. <R> to │ ┃",
         "┃ │ revert the last move.                      │ ┃",
-        "┃ │                                            │ ┃",
         "┃ │                                            │ ┃",
         "┃ │                                            │ ┃",
         "┃ │                                            │ ┃",
@@ -662,14 +664,15 @@ fn render_help_modal() {
         expected.set_style(Rect::new(18, 0, 13, 1), title_style);
         expected.set_style(Rect::new(4, 2, 5, 1), key_style);
         expected.set_style(Rect::new(4, 3, 4, 1), key_style);
+        expected.set_style(Rect::new(4, 4, 4, 1), key_style);
 
-        expected.set_style(Rect::new(4, 5, 15, 1), key_style);
         expected.set_style(Rect::new(4, 6, 15, 1), key_style);
         expected.set_style(Rect::new(4, 7, 15, 1), key_style);
         expected.set_style(Rect::new(4, 8, 15, 1), key_style);
+        expected.set_style(Rect::new(4, 9, 15, 1), key_style);
 
-        expected.set_style(Rect::new(15, 11, 7, 1), key_style);
-        expected.set_style(Rect::new(40, 11, 3, 1), key_style);
+        expected.set_style(Rect::new(15, 12, 7, 1), key_style);
+        expected.set_style(Rect::new(40, 12, 3, 1), key_style);
 
         expected.set_style(Rect::new(25, 22, 6, 1), key_style_bold);
         expected.set_style(Rect::new(18, 23, 4, 1), key_style_bold);
@@ -889,4 +892,417 @@ fn render_about_modal() {
 
     app.render(buf0.area, &mut buf0);
     assert_eq!(buf0, expected0);
+}
+
+#[test]
+fn handle_key_event_selection_id_modal_valid() {
+    const EMPTY_ENTRY_STATE: AppState = AppState::SelectionIdModal {
+        id: [SPACE_ASCII_CODE; 5],
+    };
+
+    let mut app = App::new();
+    app.handle_key_event(KeyCode::F(3).into());
+    assert_eq!(app.app_state, EMPTY_ENTRY_STATE);
+
+    app.handle_key_event(KeyCode::Esc.into());
+    assert_eq!(app.app_state, AppState::Base);
+
+    app.handle_key_event(KeyCode::F(3).into());
+    app.handle_key_event(KeyCode::Char('1').into());
+    app.handle_key_event(KeyCode::Char('9').into());
+    assert_eq!(
+        app.app_state,
+        AppState::SelectionIdModal {
+            id: [
+                SPACE_ASCII_CODE,
+                SPACE_ASCII_CODE,
+                SPACE_ASCII_CODE,
+                0x31,
+                0x39
+            ]
+        }
+    );
+
+    app.handle_key_event(KeyCode::Backspace.into());
+    assert_eq!(
+        app.app_state,
+        AppState::SelectionIdModal {
+            id: [
+                SPACE_ASCII_CODE,
+                SPACE_ASCII_CODE,
+                SPACE_ASCII_CODE,
+                SPACE_ASCII_CODE,
+                0x31
+            ]
+        }
+    );
+
+    app.handle_key_event(KeyCode::Char('2').into());
+    app.handle_key_event(KeyCode::Char('3').into());
+    assert_eq!(
+        app.app_state,
+        AppState::SelectionIdModal {
+            id: [SPACE_ASCII_CODE, SPACE_ASCII_CODE, 0x31, 0x32, 0x33]
+        }
+    );
+
+    app.handle_key_event(KeyCode::Enter.into());
+    assert_eq!(app.app_state, AppState::Base);
+    assert_eq!(123, app.game_handler.game.as_ref().unwrap().id);
+
+    app.handle_key_event(KeyCode::F(3).into());
+    assert_eq!(app.app_state, EMPTY_ENTRY_STATE);
+
+    let mut key: KeyEvent = KeyCode::Char('q').into();
+    key.modifiers = KeyModifiers::CONTROL;
+    app.handle_key_event(key);
+    assert_eq!(app.app_state, AppState::Exit);
+}
+
+// invalid data for the selection by id rejects the <ENTER> key
+#[test]
+fn handle_key_event_selection_id_modal_invalid() {
+    const EMPTY_ENTRY_STATE: AppState = AppState::SelectionIdModal {
+        id: [SPACE_ASCII_CODE; 5],
+    };
+
+    let mut app = App::new();
+
+    app.handle_key_event(KeyCode::F(3).into());
+    assert_eq!(app.app_state, EMPTY_ENTRY_STATE);
+
+    // no data entered
+    app.handle_key_event(KeyCode::Enter.into());
+    assert_eq!(app.app_state, EMPTY_ENTRY_STATE);
+
+    // invalid chars
+    app.handle_key_event(KeyCode::Char('a').into());
+    app.handle_key_event(KeyCode::Char('-').into());
+    assert_eq!(app.app_state, EMPTY_ENTRY_STATE);
+
+    // id 0 is invalid
+    app.handle_key_event(KeyCode::Char('0').into());
+    assert_eq!(
+        app.app_state,
+        AppState::SelectionIdModal {
+            id: [
+                SPACE_ASCII_CODE,
+                SPACE_ASCII_CODE,
+                SPACE_ASCII_CODE,
+                SPACE_ASCII_CODE,
+                0x30
+            ]
+        }
+    );
+    app.handle_key_event(KeyCode::Enter.into());
+    assert_eq!(
+        app.app_state,
+        AppState::SelectionIdModal {
+            id: [
+                SPACE_ASCII_CODE,
+                SPACE_ASCII_CODE,
+                SPACE_ASCII_CODE,
+                SPACE_ASCII_CODE,
+                0x30
+            ]
+        }
+    );
+
+    // reset modal
+    app.handle_key_event(KeyCode::Esc.into());
+    app.handle_key_event(KeyCode::F(3).into());
+
+    // id 64001 is invalid
+    app.handle_key_event(KeyCode::Char('6').into());
+    app.handle_key_event(KeyCode::Char('4').into());
+    app.handle_key_event(KeyCode::Char('0').into());
+    app.handle_key_event(KeyCode::Char('0').into());
+    app.handle_key_event(KeyCode::Char('1').into());
+    assert_eq!(
+        app.app_state,
+        AppState::SelectionIdModal {
+            id: [0x36, 0x34, 0x30, 0x30, 0x31]
+        }
+    );
+    app.handle_key_event(KeyCode::Enter.into());
+    assert_eq!(
+        app.app_state,
+        AppState::SelectionIdModal {
+            id: [0x36, 0x34, 0x30, 0x30, 0x31]
+        }
+    );
+
+    // reset modal
+    app.handle_key_event(KeyCode::Esc.into());
+    app.handle_key_event(KeyCode::F(3).into());
+
+    // id outside of u16 does not panic
+    app.handle_key_event(KeyCode::Char('7').into());
+    app.handle_key_event(KeyCode::Char('0').into());
+    app.handle_key_event(KeyCode::Char('7').into());
+    app.handle_key_event(KeyCode::Char('8').into());
+    app.handle_key_event(KeyCode::Char('9').into());
+    assert_eq!(
+        app.app_state,
+        AppState::SelectionIdModal {
+            id: [0x37, 0x30, 0x37, 0x38, 0x39]
+        }
+    );
+    app.handle_key_event(KeyCode::Enter.into());
+    assert_eq!(
+        app.app_state,
+        AppState::SelectionIdModal {
+            id: [0x37, 0x30, 0x37, 0x38, 0x39]
+        }
+    );
+}
+
+#[test]
+fn render_selection_id_modal_valid() {
+    let mut app = App::new();
+    let mut buf = Buffer::empty(Rect::new(0, 0, 32, 24));
+    app.handle_key_event(KeyCode::F(3).into());
+
+    app.render(buf.area, &mut buf);
+
+    let mut expected = Buffer::with_lines(vec![
+        "┏━━━━━━━━ RSLibreCell ━━━━━━━━━┓",
+        "┃ ┌─── Choose game by ID ────┐ ┃",
+        "┃ │                          │ ┃",
+        "┃ │         Enter ID:        │ ┃",
+        "┃ │                          │ ┃",
+        "┃ │                          │ ┃",
+        "┃ │                          │ ┃",
+        "┃ │                          │ ┃",
+        "┃ │                          │ ┃",
+        "┃ │                          │ ┃",
+        "┃ │                          │ ┃",
+        "┃ │                          │ ┃",
+        "┃ │                          │ ┃",
+        "┃ │                          │ ┃",
+        "┃ │                          │ ┃",
+        "┃ │                          │ ┃",
+        "┃ │                          │ ┃",
+        "┃ │                          │ ┃",
+        "┃ │                          │ ┃",
+        "┃ │                          │ ┃",
+        "┃ │                          │ ┃",
+        "┃ │                          │ ┃",
+        "┃ └Accept <Enter> Abort <Esc>┘ ┃",
+        "┗━━ Help <F1> Quit <CTRL-q> ━━━┛",
+    ]);
+    {
+        let title_style = Style::new().bold();
+        let key_style_bold = Style::new().blue().bold();
+        let input_style = Style::new().underlined();
+        expected.set_style(Rect::new(9, 0, 13, 1), title_style);
+
+        expected.set_style(Rect::new(14, 4, 5, 1), input_style);
+
+        expected.set_style(Rect::new(10, 22, 7, 1), key_style_bold);
+        expected.set_style(Rect::new(24, 22, 5, 1), key_style_bold);
+        expected.set_style(Rect::new(9, 23, 4, 1), key_style_bold);
+        expected.set_style(Rect::new(19, 23, 9, 1), key_style_bold);
+    }
+
+    assert_eq!(buf, expected);
+
+    app.handle_key_event(KeyCode::Char('1').into());
+    app.handle_key_event(KeyCode::Char('2').into());
+    app.handle_key_event(KeyCode::Char('3').into());
+
+    app.render(buf.area, &mut buf);
+
+    let mut expected = Buffer::with_lines(vec![
+        "┏━━━━━━━━ RSLibreCell ━━━━━━━━━┓",
+        "┃ ┌─── Choose game by ID ────┐ ┃",
+        "┃ │                          │ ┃",
+        "┃ │         Enter ID:        │ ┃",
+        "┃ │             123          │ ┃",
+        "┃ │                          │ ┃",
+        "┃ │                          │ ┃",
+        "┃ │                          │ ┃",
+        "┃ │                          │ ┃",
+        "┃ │                          │ ┃",
+        "┃ │                          │ ┃",
+        "┃ │                          │ ┃",
+        "┃ │                          │ ┃",
+        "┃ │                          │ ┃",
+        "┃ │                          │ ┃",
+        "┃ │                          │ ┃",
+        "┃ │                          │ ┃",
+        "┃ │                          │ ┃",
+        "┃ │                          │ ┃",
+        "┃ │                          │ ┃",
+        "┃ │                          │ ┃",
+        "┃ │                          │ ┃",
+        "┃ └Accept <Enter> Abort <Esc>┘ ┃",
+        "┗━━ Help <F1> Quit <CTRL-q> ━━━┛",
+    ]);
+    {
+        let title_style = Style::new().bold();
+        let key_style_bold = Style::new().blue().bold();
+        let input_style = Style::new().underlined();
+        expected.set_style(Rect::new(9, 0, 13, 1), title_style);
+
+        expected.set_style(Rect::new(14, 4, 5, 1), input_style);
+
+        expected.set_style(Rect::new(10, 22, 7, 1), key_style_bold);
+        expected.set_style(Rect::new(24, 22, 5, 1), key_style_bold);
+        expected.set_style(Rect::new(9, 23, 4, 1), key_style_bold);
+        expected.set_style(Rect::new(19, 23, 9, 1), key_style_bold);
+    }
+
+    assert_eq!(buf, expected);
+
+    app.handle_key_event(KeyCode::Char('9').into());
+    app.handle_key_event(KeyCode::Char('8').into());
+    app.handle_key_event(KeyCode::Char('7').into());
+
+    app.render(buf.area, &mut buf);
+
+    let mut expected = Buffer::with_lines(vec![
+        "┏━━━━━━━━ RSLibreCell ━━━━━━━━━┓",
+        "┃ ┌─── Choose game by ID ────┐ ┃",
+        "┃ │                          │ ┃",
+        "┃ │         Enter ID:        │ ┃",
+        "┃ │           12398          │ ┃",
+        "┃ │                          │ ┃",
+        "┃ │                          │ ┃",
+        "┃ │                          │ ┃",
+        "┃ │                          │ ┃",
+        "┃ │                          │ ┃",
+        "┃ │                          │ ┃",
+        "┃ │                          │ ┃",
+        "┃ │                          │ ┃",
+        "┃ │                          │ ┃",
+        "┃ │                          │ ┃",
+        "┃ │                          │ ┃",
+        "┃ │                          │ ┃",
+        "┃ │                          │ ┃",
+        "┃ │                          │ ┃",
+        "┃ │                          │ ┃",
+        "┃ │                          │ ┃",
+        "┃ │                          │ ┃",
+        "┃ └Accept <Enter> Abort <Esc>┘ ┃",
+        "┗━━ Help <F1> Quit <CTRL-q> ━━━┛",
+    ]);
+    {
+        let title_style = Style::new().bold();
+        let key_style_bold = Style::new().blue().bold();
+        let input_style = Style::new().underlined();
+        expected.set_style(Rect::new(9, 0, 13, 1), title_style);
+
+        expected.set_style(Rect::new(14, 4, 5, 1), input_style);
+
+        expected.set_style(Rect::new(10, 22, 7, 1), key_style_bold);
+        expected.set_style(Rect::new(24, 22, 5, 1), key_style_bold);
+        expected.set_style(Rect::new(9, 23, 4, 1), key_style_bold);
+        expected.set_style(Rect::new(19, 23, 9, 1), key_style_bold);
+    }
+
+    assert_eq!(buf, expected);
+}
+
+#[test]
+fn render_selection_id_modal_invalid() {
+    let mut app = App::new();
+    let mut buf = Buffer::empty(Rect::new(0, 0, 32, 24));
+    app.handle_key_event(KeyCode::F(3).into());
+    app.handle_key_event(KeyCode::Char('0').into());
+
+    app.render(buf.area, &mut buf);
+
+    let mut expected = Buffer::with_lines(vec![
+        "┏━━━━━━━━ RSLibreCell ━━━━━━━━━┓",
+        "┃ ┌─── Choose game by ID ────┐ ┃",
+        "┃ │                          │ ┃",
+        "┃ │         Enter ID:        │ ┃",
+        "┃ │               0          │ ┃",
+        "┃ │                          │ ┃",
+        "┃ │                          │ ┃",
+        "┃ │                          │ ┃",
+        "┃ │                          │ ┃",
+        "┃ │                          │ ┃",
+        "┃ │                          │ ┃",
+        "┃ │                          │ ┃",
+        "┃ │                          │ ┃",
+        "┃ │                          │ ┃",
+        "┃ │                          │ ┃",
+        "┃ │                          │ ┃",
+        "┃ │                          │ ┃",
+        "┃ │                          │ ┃",
+        "┃ │                          │ ┃",
+        "┃ │                          │ ┃",
+        "┃ │                          │ ┃",
+        "┃ │                          │ ┃",
+        "┃ └Accept <Enter> Abort <Esc>┘ ┃",
+        "┗━━ Help <F1> Quit <CTRL-q> ━━━┛",
+    ]);
+    {
+        let title_style = Style::new().bold();
+        let key_style_bold = Style::new().blue().bold();
+        let input_style_invalud = Style::new().underlined().red();
+        expected.set_style(Rect::new(9, 0, 13, 1), title_style);
+
+        expected.set_style(Rect::new(14, 4, 5, 1), input_style_invalud);
+
+        expected.set_style(Rect::new(10, 22, 7, 1), key_style_bold);
+        expected.set_style(Rect::new(24, 22, 5, 1), key_style_bold);
+        expected.set_style(Rect::new(9, 23, 4, 1), key_style_bold);
+        expected.set_style(Rect::new(19, 23, 9, 1), key_style_bold);
+    }
+
+    assert_eq!(buf, expected);
+
+    app.handle_key_event(KeyCode::Backspace.into());
+    app.handle_key_event(KeyCode::Char('6').into());
+    app.handle_key_event(KeyCode::Char('4').into());
+    app.handle_key_event(KeyCode::Char('0').into());
+    app.handle_key_event(KeyCode::Char('0').into());
+    app.handle_key_event(KeyCode::Char('1').into());
+
+    app.render(buf.area, &mut buf);
+
+    let mut expected = Buffer::with_lines(vec![
+        "┏━━━━━━━━ RSLibreCell ━━━━━━━━━┓",
+        "┃ ┌─── Choose game by ID ────┐ ┃",
+        "┃ │                          │ ┃",
+        "┃ │         Enter ID:        │ ┃",
+        "┃ │           64001          │ ┃",
+        "┃ │                          │ ┃",
+        "┃ │                          │ ┃",
+        "┃ │                          │ ┃",
+        "┃ │                          │ ┃",
+        "┃ │                          │ ┃",
+        "┃ │                          │ ┃",
+        "┃ │                          │ ┃",
+        "┃ │                          │ ┃",
+        "┃ │                          │ ┃",
+        "┃ │                          │ ┃",
+        "┃ │                          │ ┃",
+        "┃ │                          │ ┃",
+        "┃ │                          │ ┃",
+        "┃ │                          │ ┃",
+        "┃ │                          │ ┃",
+        "┃ │                          │ ┃",
+        "┃ │                          │ ┃",
+        "┃ └Accept <Enter> Abort <Esc>┘ ┃",
+        "┗━━ Help <F1> Quit <CTRL-q> ━━━┛",
+    ]);
+    {
+        let title_style = Style::new().bold();
+        let key_style_bold = Style::new().blue().bold();
+        let input_style_invalud = Style::new().underlined().red();
+        expected.set_style(Rect::new(9, 0, 13, 1), title_style);
+
+        expected.set_style(Rect::new(14, 4, 5, 1), input_style_invalud);
+
+        expected.set_style(Rect::new(10, 22, 7, 1), key_style_bold);
+        expected.set_style(Rect::new(24, 22, 5, 1), key_style_bold);
+        expected.set_style(Rect::new(9, 23, 4, 1), key_style_bold);
+        expected.set_style(Rect::new(19, 23, 9, 1), key_style_bold);
+    }
+
+    assert_eq!(buf, expected);
 }

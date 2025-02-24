@@ -16,8 +16,6 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-use std::io;
-
 use crossterm::event::{self, Event, KeyCode, KeyEvent, KeyEventKind, KeyModifiers};
 use ratatui::{
     buffer::Buffer,
@@ -33,6 +31,7 @@ use rslibrecell::{
     game_handler::GameHandler,
     r#move::{Location, Move},
 };
+use std::{io, str};
 
 /// The state of the app.
 #[derive(Debug, PartialEq)]
@@ -44,7 +43,11 @@ enum AppState {
     /// The app is displaying the modal help dialog.
     HelpModal,
     /// The app is displaying the modal about dialog.
+    /// `scroll` indicates the scroll position.
     AboutModal { scroll: u16 },
+    /// The app is displaying the modal "game selection by Id".
+    /// `id` serves as a byte buffer for an UTF8 string.
+    SelectionIdModal { id: [u8; 5] },
 }
 
 /// The actual app.
@@ -57,6 +60,8 @@ pub struct App {
     /// The first part of a move as entered by the user, if any.
     move_from: Option<Location>,
 }
+
+const SPACE_ASCII_CODE: u8 = 0x20;
 
 impl App {
     /// Creates and initializes the app.
@@ -106,6 +111,9 @@ impl App {
             AppState::Exit => panic!("should never happen"),
             AppState::HelpModal => self.handle_key_event_help_modal(key_event),
             AppState::AboutModal { scroll: _ } => self.handle_key_event_about_modal(key_event),
+            AppState::SelectionIdModal { id: _ } => {
+                self.handle_key_event_selection_id_modal(key_event)
+            }
         };
     }
 
@@ -117,6 +125,7 @@ impl App {
             }
             KeyCode::F(1) => self.help_modal(),
             KeyCode::F(2) => self.random_game(),
+            KeyCode::F(3) => self.selection_id_modal(),
             KeyCode::F(12) => self.about_modal(),
             _ => self.handle_key_event_game(key_event),
         }
@@ -184,6 +193,42 @@ impl App {
         }
     }
 
+    /// Handles key events when the "game selection by id" modal is active.
+    fn handle_key_event_selection_id_modal(&mut self, key_event: KeyEvent) {
+        match key_event.code {
+            KeyCode::Char('q') if key_event.modifiers.contains(KeyModifiers::CONTROL) => {
+                self.exit()
+            }
+            KeyCode::F(1) => {
+                self.help_modal();
+            }
+            KeyCode::Esc => {
+                self.base();
+            }
+            KeyCode::Enter => {
+                self.selection_id_try_start();
+            }
+            KeyCode::Backspace => {
+                self.selection_id_modal_delete_char();
+            }
+            KeyCode::Char(char)
+                if char == '0'
+                    || char == '1'
+                    || char == '2'
+                    || char == '3'
+                    || char == '4'
+                    || char == '5'
+                    || char == '6'
+                    || char == '7'
+                    || char == '8'
+                    || char == '9' =>
+            {
+                self.selection_id_modal_add_char(char.to_digit(10).unwrap());
+            }
+            _ => {}
+        }
+    }
+
     /// Starts a random game.
     fn random_game(&mut self) {
         self.game_handler.random_game();
@@ -224,7 +269,55 @@ impl App {
         }
     }
 
-    #[cfg(test)]
+    /// Switches to "game selection by id" modal.
+    fn selection_id_modal(&mut self) {
+        self.app_state = AppState::SelectionIdModal {
+            id: [SPACE_ASCII_CODE; 5],
+        }
+    }
+
+    /// Removes the last character from the "game selection by id" modal.
+    fn selection_id_modal_delete_char(&mut self) {
+        match &self.app_state {
+            AppState::SelectionIdModal { id } => {
+                if id[4] != SPACE_ASCII_CODE {
+                    let new_id: [u8; 5] = [SPACE_ASCII_CODE, id[0], id[1], id[2], id[3]];
+                    self.app_state = AppState::SelectionIdModal { id: new_id };
+                }
+            }
+            _ => {}
+        }
+    }
+
+    /// Adds a character to the "game selection by id" modal.
+    fn selection_id_modal_add_char(&mut self, new_digit: u32) {
+        match self.app_state {
+            AppState::SelectionIdModal { id } => {
+                if id[0] == SPACE_ASCII_CODE {
+                    let new_id: [u8; 5] = [id[1], id[2], id[3], id[4], 0x30 + new_digit as u8];
+                    self.app_state = AppState::SelectionIdModal { id: new_id };
+                }
+            }
+            _ => {}
+        }
+    }
+
+    /// Attempts to select the game from the value
+    /// entered in the "game selection by id" modal.
+    fn selection_id_try_start(&mut self) -> () {
+        if let AppState::SelectionIdModal { id } = &self.app_state {
+            if id[4] != SPACE_ASCII_CODE {
+                let id = str::from_utf8(id).unwrap().trim();
+                let id = u32::from_str_radix(id, 10).unwrap();
+                if 0 < id && id < 64001 {
+                    self.game_from_u16_id(id as u16);
+                    self.app_state = AppState::Base;
+                }
+            }
+        }
+    }
+
+    /// Start a game from the given id.
     fn game_from_u16_id(&mut self, id: u16) {
         self.game_handler.game_from_id(id);
     }
@@ -302,17 +395,19 @@ impl Widget for &mut App {
                 render::render_about_modal(area, buf, scroll, &mut set_scroll);
                 self.app_state = AppState::AboutModal { scroll: new_scroll };
             }
+            AppState::SelectionIdModal { id } => {
+                render::render_selection_id_modal(area, buf, id);
+            }
         }
     }
 }
 
 mod render {
+    use super::*;
     use rslibrecell::game::Game;
 
-    use super::*;
-
     /// Provides the lines for the inner game board.
-    pub fn provide_game_lines<'a>(lines: &mut Vec<Line<'a>>, game: &'a Game) {
+    pub(crate) fn provide_game_lines<'a>(lines: &mut Vec<Line<'a>>, game: &'a Game) {
         let mut title_line = String::from("                           ");
         let id = &game.id.to_string();
         for _ in 0..(5 - id.len()) {
@@ -385,7 +480,7 @@ mod render {
     }
 
     /// Renders the help modal.
-    pub fn render_help_modal(area: Rect, buf: &mut Buffer) {
+    pub(crate) fn render_help_modal(area: Rect, buf: &mut Buffer) {
         let title = Line::from(" Help ");
         let instructions = Line::from(vec![" Close ".into(), "<Esc> ".blue().bold()]);
         let block = Block::bordered()
@@ -400,6 +495,10 @@ mod render {
         help_lines.push(Line::from(vec![
             "<F2>".blue(),
             " to start a new random game.".into(),
+        ]));
+        help_lines.push(Line::from(vec![
+            "<F3>".blue(),
+            " to choose a game to start.".into(),
         ]));
         help_lines.push(Line::from("\n"));
         help_lines.push(Line::from(vec![
@@ -445,8 +544,12 @@ mod render {
     }
 
     /// Renders the about modal.
-    pub fn render_about_modal<F>(area: Rect, buf: &mut Buffer, scroll: u16, set_scroll: &mut F)
-    where
+    pub(crate) fn render_about_modal<F>(
+        area: Rect,
+        buf: &mut Buffer,
+        scroll: u16,
+        set_scroll: &mut F,
+    ) where
         F: FnMut(u16) -> (),
     {
         let title = Line::from(" About ");
@@ -462,7 +565,7 @@ mod render {
 
         let about_lines = create_about_text();
 
-        let help_text = Text::from(about_lines);
+        let about_text = Text::from(about_lines);
 
         let area = popup_area(area);
         Clear::default().render(area, buf);
@@ -474,7 +577,7 @@ mod render {
             vertical: 1,
         });
 
-        let wrapped_paragraph = Paragraph::new(help_text).wrap(Wrap { trim: false });
+        let wrapped_paragraph = Paragraph::new(about_text).wrap(Wrap { trim: false });
 
         let line_count = wrapped_paragraph.line_count(inner_area.width);
 
@@ -720,6 +823,49 @@ mod render {
             Line::from(vec!["".into()]),
             Line::from(vec!["END OF TERMS AND CONDITIONS".into()]),
         ]
+    }
+
+    /// Renders the "game selection by id" modal.
+    pub(crate) fn render_selection_id_modal(area: Rect, buf: &mut Buffer, id: [u8; 5]) {
+        let title = Line::from(" Choose game by ID ");
+        let instructions = Line::from(vec![
+            " Accept ".into(),
+            "<Enter>".blue().bold(),
+            " Abort ".into(),
+            "<Esc> ".blue().bold(),
+        ]);
+        let block = Block::bordered()
+            .title(title.centered())
+            .title_bottom(instructions.centered());
+
+        let id_representation = str::from_utf8(&id).unwrap();
+
+        let mut entry = id_representation.underlined();
+
+        if id[4] != SPACE_ASCII_CODE {
+            let check_id = u32::from_str_radix(id_representation.trim(), 10).unwrap();
+            if 0 == check_id || check_id > 64000 {
+                entry = entry.red();
+            }
+        }
+
+        let lines: Vec<Line<'_>> = vec!["Enter ID:".into(), entry.into()];
+
+        let content = Text::from(lines);
+
+        let area = popup_area(area);
+        Clear::default().render(area, buf);
+
+        block.render(area, buf);
+
+        let label_area = Rect {
+            x: area.x + 2,
+            y: area.y + 2,
+            width: area.width - 4,
+            height: 4,
+        };
+
+        Paragraph::new(content).centered().render(label_area, buf);
     }
 
     /// helper function to create a centered rect with a fixed margin.
