@@ -28,6 +28,10 @@ pub mod game;
 #[warn(missing_docs)]
 pub mod game_handler;
 
+/// Contains logic to handle a journey.
+#[warn(missing_docs)]
+pub mod journey_handler;
+
 /// Contains the definition of a move and accompanying logic.
 #[warn(missing_docs)]
 pub mod r#move;

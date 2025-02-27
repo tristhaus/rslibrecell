@@ -16,20 +16,44 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+use std::cell::RefCell;
+use std::fmt::Debug;
+use std::rc::Rc;
+
 use rand::Rng;
 
 use crate::game::Game;
+use crate::journey_handler::journey_repository::PersistJourney;
+use crate::journey_handler::JourneyHandler;
 use crate::r#move::{apply, automove, Move};
 
 /// A structure to hold a game and its history.
-#[derive(Default, Debug)]
-pub struct GameHandler {
+#[derive(Debug)]
+pub struct GameHandler<T>
+where
+    T: PersistJourney,
+    T: Debug,
+{
     /// The current game in its current state, if any.
     pub game: Option<Game>,
+    journey_handler: Rc<RefCell<JourneyHandler<T>>>,
     history: Vec<Game>,
 }
 
-impl GameHandler {
+impl<T> GameHandler<T>
+where
+    T: PersistJourney,
+    T: Debug,
+{
+    /// Creates a new instance containing the given journey handler.
+    pub fn new(journey_handler: Rc<RefCell<JourneyHandler<T>>>) -> Self {
+        GameHandler {
+            game: None,
+            journey_handler: journey_handler.clone(),
+            history: vec![],
+        }
+    }
+
     /// Replaces the currently held game and its history (if any)
     /// with the game defined by the given ID.
     pub fn game_from_id(&mut self, id: u16) {
@@ -75,6 +99,13 @@ impl GameHandler {
         }
 
         self.game = Some(new_state);
+
+        if self.game.as_ref().unwrap().is_won() {
+            self.journey_handler
+                .borrow_mut()
+                .receive_notification_game_won(self.game.as_ref().unwrap().id);
+        }
+
         return Ok(());
     }
 
