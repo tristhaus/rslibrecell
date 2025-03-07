@@ -16,6 +16,8 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+use std::{cell::RefCell, fmt::Debug, io, rc::Rc, str};
+
 use crossterm::event::{self, Event, KeyCode, KeyEvent, KeyEventKind, KeyModifiers};
 use ratatui::{
     buffer::Buffer,
@@ -26,14 +28,13 @@ use ratatui::{
     widgets::{Block, Clear, Paragraph, Widget, Wrap},
     DefaultTerminal, Frame,
 };
-use rslibrecell::journey_handler::journey_repository::PersistJourney;
+
 use rslibrecell::{
     card::{Card, Suit},
     game_handler::GameHandler,
-    journey_handler::JourneyHandler,
+    journey_handler::{journey_repository::PersistJourney, JourneyHandler},
     r#move::{Location, Move},
 };
-use std::{cell::RefCell, fmt::Debug, io, rc::Rc, str};
 
 /// The state of the app.
 #[derive(Debug, PartialEq)]

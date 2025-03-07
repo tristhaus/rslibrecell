@@ -18,8 +18,7 @@
 
 use std::cmp::min;
 
-use crate::card::{Card, Rank, Suit};
-use crate::game::Game;
+use crate::{card::{Card, Rank, Suit}, game::Game};
 
 /// Defines the `to` and `from` locations of a move.
 #[derive(Clone, Debug)]

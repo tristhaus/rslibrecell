@@ -16,14 +16,12 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+use std::{collections, convert::TryFrom, fmt};
+
+use crate::{card::Card, game::prng::Prng};
+
 /// Contains a certain pseudo-random number generator.
 mod prng;
-
-use std::convert::TryFrom;
-use std::{collections, fmt};
-
-use crate::card::Card;
-use crate::game::prng::Prng;
 
 /// Defines a FreeCell game.
 #[derive(Clone, Debug, PartialEq)]

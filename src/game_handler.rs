@@ -16,16 +16,11 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-use std::cell::RefCell;
-use std::fmt::Debug;
-use std::rc::Rc;
+use std::{cell::RefCell, fmt::Debug, rc::Rc};
 
 use rand::Rng;
 
-use crate::game::Game;
-use crate::journey_handler::journey_repository::PersistJourney;
-use crate::journey_handler::JourneyHandler;
-use crate::r#move::{apply, automove, Move};
+use crate::{game::Game, journey_handler::{journey_repository::PersistJourney, JourneyHandler}, r#move::{apply, automove, Move}};
 
 /// A structure to hold a game and its history.
 #[derive(Debug)]

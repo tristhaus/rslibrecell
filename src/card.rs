@@ -16,8 +16,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-use std::convert::TryFrom;
-use std::fmt;
+use std::{convert::TryFrom, fmt};
 
 /// The rank of a card.
 #[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]
