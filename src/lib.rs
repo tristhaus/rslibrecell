@@ -20,6 +20,10 @@
 #[warn(missing_docs)]
 pub mod card;
 
+/// Contains access to the key config.
+#[warn(missing_docs)]
+pub mod config_repository;
+
 /// Contains the definition of a game and accompanying logic.
 #[warn(missing_docs)]
 pub mod game;

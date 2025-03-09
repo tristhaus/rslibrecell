@@ -23,14 +23,15 @@
 
 use std::io;
 
-use rslibrecell::journey_handler::journey_repository::DiskJourneyRepo;
+use rslibrecell::{config_repository, journey_handler::journey_repository::DiskJourneyRepo};
 
 mod app;
 
 fn main() -> io::Result<()> {
     let mut terminal = ratatui::init();
+    let config = config_repository::get_config();
     let journey_repository = DiskJourneyRepo {};
-    let app_result = app::App::new(journey_repository).run(&mut terminal);
+    let app_result = app::App::new(config, journey_repository).run(&mut terminal);
     ratatui::restore();
     app_result
 }

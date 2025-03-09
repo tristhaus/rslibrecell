@@ -629,7 +629,30 @@ fn handle_key_event_help_modal() {
 
 #[test]
 fn render_help_modal() {
-    let mut app = helper::setup_app();
+    let custom_key_config = KeyConfig {
+        cell1: 'a',
+        cell2: 's',
+        cell3: 'd',
+        cell4: 'f',
+        foundation1: 'j',
+        foundation2: 'k',
+        foundation3: 'l',
+        foundation4: 'ö',
+        column1: 'y',
+        column2: 'x',
+        column3: 'c',
+        column4: 'v',
+        column5: 'm',
+        column6: ',',
+        column7: '.',
+        column8: '-',
+    };
+
+    let mut mock = MockPersistJourney::new();
+    mock.expect_read().return_const((123, vec![117, 118]));
+    mock.expect_write().return_const(());
+    let mut app = App::new(custom_key_config, mock);
+
     let mut buf = Buffer::empty(Rect::new(0, 0, 50, 24));
     app.handle_key_event(KeyCode::F(1).into());
 
@@ -643,10 +666,10 @@ fn render_help_modal() {
         "┃ │ <F3> to choose a game to start.            │ ┃",
         "┃ │ <!> to open the Journey box.               │ ┃",
         "┃ │                                            │ ┃",
-        "┃ │ <q> <w> <e> <r> - cells                    │ ┃",
-        "┃ │ <u> <i> <o> <p> - foundations              │ ┃",
-        "┃ │ <a> <s> <d> <f> - left columns             │ ┃",
-        "┃ │ <j> <k> <l> <ö> - right columns            │ ┃",
+        "┃ │ <a> <s> <d> <f> - cells                    │ ┃",
+        "┃ │ <j> <k> <l> <ö> - foundations              │ ┃",
+        "┃ │ <y> <x> <c> <v> - left columns             │ ┃",
+        "┃ │ <m> <,> <.> <-> - right columns            │ ┃",
         "┃ │                                            │ ┃",
         "┃ │ Make a move by choosing the start and end  │ ┃",
         "┃ │ of a move. <Space> to abort a move. <R> to │ ┃",
@@ -1317,7 +1340,7 @@ fn handle_key_event_selection_journey_modal() {
     let mut mock = MockPersistJourney::new();
     mock.expect_read().return_const((123, vec![117, 118]));
     mock.expect_write().return_const(());
-    let mut app = App::new(mock);
+    let mut app = App::new(helper::get_default_key_config(), mock);
 
     // open modal
     app.handle_key_event(KeyCode::Char('!').into());
@@ -1361,7 +1384,7 @@ fn make_journey_handle_next_won_game() {
         .with(predicate::eq(101), predicate::eq(vec![55, 66]))
         .once()
         .return_const(());
-    let mut app = App::new(mock);
+    let mut app = App::new(helper::get_default_key_config(), mock);
 
     app.selection_through_journey_start_next();
 
@@ -1473,7 +1496,7 @@ fn make_journey_handle_skipped_won_game() {
         .with(predicate::eq(121), predicate::eq(vec![44]))
         .once()
         .return_const(());
-    let mut app = App::new(mock);
+    let mut app = App::new(helper::get_default_key_config(), mock);
 
     app.selection_through_journey_start_skipped('3');
 
@@ -1582,7 +1605,7 @@ fn render_selection_journey_modal_no_skipped() {
     let mut mock = MockPersistJourney::new();
     mock.expect_read().return_const((1, vec![]));
     mock.expect_write().return_const(());
-    let mut app = App::new(mock);
+    let mut app = App::new(helper::get_default_key_config(), mock);
 
     let mut buf = Buffer::empty(Rect::new(0, 0, 32, 24));
     app.handle_key_event(KeyCode::Char('!').into());
@@ -1637,7 +1660,7 @@ fn render_selection_journey_modal_no_next_game() {
     mock.expect_read()
         .return_const((64001, vec![111, 222, 12345]));
     mock.expect_write().return_const(());
-    let mut app = App::new(mock);
+    let mut app = App::new(helper::get_default_key_config(), mock);
 
     let mut buf = Buffer::empty(Rect::new(0, 0, 32, 24));
     app.handle_key_event(KeyCode::Char('!').into());
@@ -1693,7 +1716,7 @@ fn render_selection_journey_modal_next_game_and_eight_skipped_games() {
     mock.expect_read()
         .return_const((23442, vec![111, 222, 333, 444, 555, 666, 777, 888]));
     mock.expect_write().return_const(());
-    let mut app = App::new(mock);
+    let mut app = App::new(helper::get_default_key_config(), mock);
 
     let mut buf = Buffer::empty(Rect::new(0, 0, 32, 24));
     app.handle_key_event(KeyCode::Char('!').into());
@@ -1757,7 +1780,7 @@ fn render_selection_journey_modal_next_game_and_many_skipped_games() {
     mock.expect_read()
         .return_const((23442, vec![111, 222, 333, 444, 555, 666, 777, 888, 999]));
     mock.expect_write().return_const(());
-    let mut app = App::new(mock);
+    let mut app = App::new(helper::get_default_key_config(), mock);
 
     let mut buf = Buffer::empty(Rect::new(0, 0, 32, 24));
     app.handle_key_event(KeyCode::Char('!').into());
@@ -1820,7 +1843,7 @@ fn render_selection_journey_modal_completed() {
     let mut mock = MockPersistJourney::new();
     mock.expect_read().return_const((64001, vec![]));
     mock.expect_write().return_const(());
-    let mut app = App::new(mock);
+    let mut app = App::new(helper::get_default_key_config(), mock);
 
     let mut buf = Buffer::empty(Rect::new(0, 0, 32, 24));
     app.handle_key_event(KeyCode::Char('!').into());
@@ -1872,9 +1895,31 @@ mod helper {
     use super::*;
 
     pub fn setup_app() -> App<MockPersistJourney> {
+        let key_config = get_default_key_config();
         let mut mock = MockPersistJourney::new();
         mock.expect_read().return_const((123, vec![117, 118]));
         mock.expect_write().return_const(());
-        App::new(mock)
+        App::new(key_config, mock)
+    }
+
+    pub fn get_default_key_config() -> KeyConfig {
+        KeyConfig {
+            cell1: 'q',
+            cell2: 'w',
+            cell3: 'e',
+            cell4: 'r',
+            foundation1: 'u',
+            foundation2: 'i',
+            foundation3: 'o',
+            foundation4: 'p',
+            column1: 'a',
+            column2: 's',
+            column3: 'd',
+            column4: 'f',
+            column5: 'j',
+            column6: 'k',
+            column7: 'l',
+            column8: 'ö',
+        }
     }
 }

@@ -31,6 +31,7 @@ use ratatui::{
 
 use rslibrecell::{
     card::{Card, Suit},
+    config_repository::KeyConfig,
     game_handler::GameHandler,
     journey_handler::{journey_repository::PersistJourney, JourneyHandler},
     r#move::{Location, Move},
@@ -64,6 +65,8 @@ where
 {
     /// The current state of the app.
     app_state: AppState,
+    /// The key config.
+    key_config: KeyConfig,
     /// An instance of a game handler.
     game_handler: GameHandler<T>,
     /// An instance of an implementation of `HandleJourney`
@@ -80,11 +83,12 @@ where
     T: Debug,
 {
     /// Creates and initializes the app.
-    pub fn new(journey_repository: T) -> App<T> {
+    pub fn new(key_config: KeyConfig, journey_repository: T) -> App<T> {
         let journey_handler = Rc::new(RefCell::new(JourneyHandler::new(journey_repository)));
 
         App {
             app_state: AppState::Base,
+            key_config,
             game_handler: GameHandler::new(journey_handler.clone()),
             journey_handler: journey_handler.clone(),
             move_from: None,
@@ -149,31 +153,47 @@ where
             KeyCode::F(3) => self.selection_id_modal(),
             KeyCode::Char('!') => self.selection_journey_modal(),
             KeyCode::F(12) => self.about_modal(),
-            _ => self.handle_key_event_game(key_event),
+            KeyCode::Char(char) => self.handle_key_event_game(char),
+            _ => {}
         }
     }
 
     /// Handles keys related to the actual game in the base state.
-    fn handle_key_event_game(&mut self, key_event: KeyEvent) {
-        match key_event.code {
-            KeyCode::Char('q') => self.register_partial_move(Location::Cell { i: 0 }),
-            KeyCode::Char('w') => self.register_partial_move(Location::Cell { i: 1 }),
-            KeyCode::Char('e') => self.register_partial_move(Location::Cell { i: 2 }),
-            KeyCode::Char('r') => self.register_partial_move(Location::Cell { i: 3 }),
-            KeyCode::Char('a') => self.register_partial_move(Location::Column { i: 0 }),
-            KeyCode::Char('s') => self.register_partial_move(Location::Column { i: 1 }),
-            KeyCode::Char('d') => self.register_partial_move(Location::Column { i: 2 }),
-            KeyCode::Char('f') => self.register_partial_move(Location::Column { i: 3 }),
-            KeyCode::Char('j') => self.register_partial_move(Location::Column { i: 4 }),
-            KeyCode::Char('k') => self.register_partial_move(Location::Column { i: 5 }),
-            KeyCode::Char('l') => self.register_partial_move(Location::Column { i: 6 }),
-            KeyCode::Char('ö') => self.register_partial_move(Location::Column { i: 7 }),
-            KeyCode::Char('u') | KeyCode::Char('i') | KeyCode::Char('o') | KeyCode::Char('p') => {
-                self.register_partial_move(Location::Foundation)
-            }
-            KeyCode::Char(' ') => self.clear_move(),
-            KeyCode::Char('R') => self.revert(),
-            _ => {}
+    fn handle_key_event_game(&mut self, char: char) {
+        if char == self.key_config.cell1 {
+            self.register_partial_move(Location::Cell { i: 0 });
+        } else if char == self.key_config.cell2 {
+            self.register_partial_move(Location::Cell { i: 1 });
+        } else if char == self.key_config.cell3 {
+            self.register_partial_move(Location::Cell { i: 2 });
+        } else if char == self.key_config.cell4 {
+            self.register_partial_move(Location::Cell { i: 3 });
+        } else if char == self.key_config.foundation1
+            || char == self.key_config.foundation2
+            || char == self.key_config.foundation3
+            || char == self.key_config.foundation4
+        {
+            self.register_partial_move(Location::Foundation);
+        } else if char == self.key_config.column1 {
+            self.register_partial_move(Location::Column { i: 0 });
+        } else if char == self.key_config.column2 {
+            self.register_partial_move(Location::Column { i: 1 });
+        } else if char == self.key_config.column3 {
+            self.register_partial_move(Location::Column { i: 2 });
+        } else if char == self.key_config.column4 {
+            self.register_partial_move(Location::Column { i: 3 });
+        } else if char == self.key_config.column5 {
+            self.register_partial_move(Location::Column { i: 4 });
+        } else if char == self.key_config.column6 {
+            self.register_partial_move(Location::Column { i: 5 });
+        } else if char == self.key_config.column7 {
+            self.register_partial_move(Location::Column { i: 6 });
+        } else if char == self.key_config.column8 {
+            self.register_partial_move(Location::Column { i: 7 });
+        } else if char == ' ' {
+            self.clear_move();
+        } else if char == 'R' {
+            self.revert();
         }
     }
 
@@ -484,7 +504,7 @@ where
         match self.app_state {
             AppState::Base => {}
             AppState::Exit => panic!("should never happen"),
-            AppState::HelpModal => render::render_help_modal(area, buf),
+            AppState::HelpModal => render::render_help_modal(&self.key_config, area, buf),
             AppState::AboutModal { scroll } => {
                 let mut new_scroll = scroll;
                 let mut set_scroll = |x: u16| -> () {
@@ -583,7 +603,7 @@ mod render {
     }
 
     /// Renders the help modal.
-    pub(crate) fn render_help_modal(area: Rect, buf: &mut Buffer) {
+    pub(crate) fn render_help_modal(key_config: &KeyConfig, area: Rect, buf: &mut Buffer) {
         let title = Line::from(" Help ");
         let instructions = Line::from(vec![" Close ".into(), "<Esc> ".blue().bold()]);
         let block = Block::bordered()
@@ -609,19 +629,19 @@ mod render {
         ]));
         help_lines.push(Line::from("\n"));
         help_lines.push(Line::from(vec![
-            "<q> <w> <e> <r>".blue(),
+            format!("<{}> <{}> <{}> <{}>", key_config.cell1, key_config.cell2, key_config.cell3, key_config.cell4).blue(),
             " - cells ".into(),
         ]));
         help_lines.push(Line::from(vec![
-            "<u> <i> <o> <p>".blue(),
+            format!("<{}> <{}> <{}> <{}>", key_config.foundation1, key_config.foundation2, key_config.foundation3, key_config.foundation4).blue(),
             " - foundations ".into(),
         ]));
         help_lines.push(Line::from(vec![
-            "<a> <s> <d> <f>".blue(),
+            format!("<{}> <{}> <{}> <{}>", key_config.column1, key_config.column2, key_config.column3, key_config.column4).blue(),
             " - left columns ".into(),
         ]));
         help_lines.push(Line::from(vec![
-            "<j> <k> <l> <ö>".blue(),
+            format!("<{}> <{}> <{}> <{}>", key_config.column5, key_config.column6, key_config.column7, key_config.column8).blue(),
             " - right columns ".into(),
         ]));
         help_lines.push(Line::from("\n"));
