@@ -616,40 +616,40 @@ mod render {
             " to show the About box.".into(),
         ]));
         help_lines.push(Line::from(vec![
-            "<F2>".blue(),
+            "<F2>".cyan(),
             " to start a new random game.".into(),
         ]));
         help_lines.push(Line::from(vec![
-            "<F3>".blue(),
+            "<F3>".cyan(),
             " to choose a game to start.".into(),
         ]));
         help_lines.push(Line::from(vec![
-            "<!>".blue(),
+            "<!>".cyan(),
             " to open the Journey box.".into(),
         ]));
         help_lines.push(Line::from("\n"));
         help_lines.push(Line::from(vec![
-            format!("<{}> <{}> <{}> <{}>", key_config.cell1, key_config.cell2, key_config.cell3, key_config.cell4).blue(),
+            format!("<{}> <{}> <{}> <{}>", key_config.cell1, key_config.cell2, key_config.cell3, key_config.cell4).cyan(),
             " - cells ".into(),
         ]));
         help_lines.push(Line::from(vec![
-            format!("<{}> <{}> <{}> <{}>", key_config.foundation1, key_config.foundation2, key_config.foundation3, key_config.foundation4).blue(),
+            format!("<{}> <{}> <{}> <{}>", key_config.foundation1, key_config.foundation2, key_config.foundation3, key_config.foundation4).cyan(),
             " - foundations ".into(),
         ]));
         help_lines.push(Line::from(vec![
-            format!("<{}> <{}> <{}> <{}>", key_config.column1, key_config.column2, key_config.column3, key_config.column4).blue(),
+            format!("<{}> <{}> <{}> <{}>", key_config.column1, key_config.column2, key_config.column3, key_config.column4).cyan(),
             " - left columns ".into(),
         ]));
         help_lines.push(Line::from(vec![
-            format!("<{}> <{}> <{}> <{}>", key_config.column5, key_config.column6, key_config.column7, key_config.column8).blue(),
+            format!("<{}> <{}> <{}> <{}>", key_config.column5, key_config.column6, key_config.column7, key_config.column8).cyan(),
             " - right columns ".into(),
         ]));
         help_lines.push(Line::from("\n"));
         help_lines.push(Line::from(vec![
             "Make a move by choosing the start and end of a move. ".into(),
-            "<Space>".blue(),
+            "<Space>".cyan(),
             " to abort a move. ".into(),
-            "<R>".blue(),
+            "<R>".cyan(),
             " to revert the last move.".into(),
         ]));
 

@@ -8,7 +8,7 @@ The implementation is terminal-based and has a text interface, which is resizabl
 
 <div align="center">
 
-![status](/../screenshot/main.png?raw=true)
+![main](/../screenshot/main.png?raw=true)![journey](/../screenshot/journey.png?raw=true)
 
 </div>
 

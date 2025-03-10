@@ -686,21 +686,22 @@ fn render_help_modal() {
     ]);
     {
         let title_style = Style::new().bold();
-        let key_style = Style::new().blue();
+        let active_key_style = Style::new().blue();
+        let inactive_key_style = Style::new().cyan();
         let key_style_bold = Style::new().blue().bold();
         expected.set_style(Rect::new(18, 0, 13, 1), title_style);
-        expected.set_style(Rect::new(4, 2, 5, 1), key_style);
-        expected.set_style(Rect::new(4, 3, 4, 1), key_style);
-        expected.set_style(Rect::new(4, 4, 4, 1), key_style);
-        expected.set_style(Rect::new(4, 5, 3, 1), key_style);
+        expected.set_style(Rect::new(4, 2, 5, 1), active_key_style);
+        expected.set_style(Rect::new(4, 3, 4, 1), inactive_key_style);
+        expected.set_style(Rect::new(4, 4, 4, 1), inactive_key_style);
+        expected.set_style(Rect::new(4, 5, 3, 1), inactive_key_style);
 
-        expected.set_style(Rect::new(4, 7, 15, 1), key_style);
-        expected.set_style(Rect::new(4, 8, 15, 1), key_style);
-        expected.set_style(Rect::new(4, 9, 15, 1), key_style);
-        expected.set_style(Rect::new(4, 10, 15, 1), key_style);
+        expected.set_style(Rect::new(4, 7, 15, 1), inactive_key_style);
+        expected.set_style(Rect::new(4, 8, 15, 1), inactive_key_style);
+        expected.set_style(Rect::new(4, 9, 15, 1), inactive_key_style);
+        expected.set_style(Rect::new(4, 10, 15, 1), inactive_key_style);
 
-        expected.set_style(Rect::new(15, 13, 7, 1), key_style);
-        expected.set_style(Rect::new(40, 13, 3, 1), key_style);
+        expected.set_style(Rect::new(15, 13, 7, 1), inactive_key_style);
+        expected.set_style(Rect::new(40, 13, 3, 1), inactive_key_style);
 
         expected.set_style(Rect::new(25, 22, 6, 1), key_style_bold);
         expected.set_style(Rect::new(18, 23, 4, 1), key_style_bold);
