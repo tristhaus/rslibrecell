@@ -19,9 +19,9 @@ You can configure the keys used to actually play the game by placing a file mode
 | macOS            | `/Users/Alice/Library/Application Support/rslibrecell` |
 | MS Windows       | `C:\Users\Alice\AppData\Roaming\rslibrecell`           |
 
-The sample file mirrors the default config, which has the home row of a QWERTY US keyboard for the columns, `q`, `w`, `e`, `r` for the cells, and `u`, `i`, `o`, `p` for the foundations.
+The sample file mirrors the default config, which has the home row of a QWERTY US keyboard (`a`-`f`, `j`-`;`) for the columns, `q`, `w`, `e`, `r` for the cells, and `u`, `i`, `o`, `p` for the foundations.
 
-*Journey Mode* is available using the `!` key, allowing you to play all winnable games of the 64000 available in order. You can also decide to skip a game for now and come back to it later. Your progress is persisted on disk at the following locations:
+*Journey Mode* is available using the `!` key, allowing you to play all winnable games of the 64000 available in order. You can also decide to skip a game for now and come back to it later. Your progress is persisted on disk in the same place as the config, see above.
 
 ## For Developers
 
