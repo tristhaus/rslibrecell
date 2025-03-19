@@ -32,6 +32,7 @@ use ratatui::{
 use rslibrecell::{
     card::{Card, Suit},
     config_repository::KeyConfig,
+    game::GameId,
     game_handler::GameHandler,
     journey_handler::{journey_repository::PersistJourney, JourneyHandler},
     r#move::{Location, Move},
@@ -383,7 +384,7 @@ where
                 let id = str::from_utf8(id).unwrap().trim();
                 let id = u32::from_str_radix(id, 10).unwrap();
                 if 0 < id && id < 64001 {
-                    self.game_from_u16_id(id as u16);
+                    self.game_from_numeric_id(GameId(id as u16));
                     self.base();
                 }
             }
@@ -392,12 +393,12 @@ where
 
     /// Starts a selected skipped game within the journey.
     fn selection_through_journey_start_next(&mut self) {
-        let id: u16;
+        let id: GameId;
         {
             id = self.journey_handler.borrow().next_game_ids().0;
         }
 
-        self.game_from_u16_id(id);
+        self.game_from_numeric_id(id);
         self.base();
     }
 
@@ -407,7 +408,7 @@ where
 
         let index = if number == 0 { 8 } else { number - 2 };
 
-        let items: Vec<u16>;
+        let items: Vec<GameId>;
         {
             items = self.journey_handler.borrow().next_game_ids().1.clone();
         }
@@ -415,7 +416,7 @@ where
         let id = items.get(index);
 
         if let Some(id) = id {
-            self.game_from_u16_id(*id);
+            self.game_from_numeric_id(id.clone());
             self.base();
         }
     }
@@ -426,7 +427,7 @@ where
     }
 
     /// Start a game from the given id.
-    fn game_from_u16_id(&mut self, id: u16) {
+    fn game_from_numeric_id(&mut self, id: GameId) {
         self.game_handler.game_from_id(id);
     }
 
@@ -532,13 +533,9 @@ mod render {
     /// Provides the lines for the inner game board.
     pub(crate) fn provide_game_lines<'a>(lines: &mut Vec<Line<'a>>, game: &'a Game) {
         let mut title_line = String::from("                           ");
-        let id = &game.id.to_string();
-        for _ in 0..(5 - id.len()) {
-            title_line += " ";
-        }
-        title_line += "#";
-        title_line += &id;
-        title_line += " ";
+
+        let id = format!("#{:}", game.id.0.to_string());
+        title_line += &format!("{:>6} ", id);
 
         lines.push(Line::from(title_line));
 
@@ -629,19 +626,38 @@ mod render {
         ]));
         help_lines.push(Line::from("\n"));
         help_lines.push(Line::from(vec![
-            format!("<{}> <{}> <{}> <{}>", key_config.cell1, key_config.cell2, key_config.cell3, key_config.cell4).cyan(),
+            format!(
+                "<{}> <{}> <{}> <{}>",
+                key_config.cell1, key_config.cell2, key_config.cell3, key_config.cell4
+            )
+            .cyan(),
             " - cells ".into(),
         ]));
         help_lines.push(Line::from(vec![
-            format!("<{}> <{}> <{}> <{}>", key_config.foundation1, key_config.foundation2, key_config.foundation3, key_config.foundation4).cyan(),
+            format!(
+                "<{}> <{}> <{}> <{}>",
+                key_config.foundation1,
+                key_config.foundation2,
+                key_config.foundation3,
+                key_config.foundation4
+            )
+            .cyan(),
             " - foundations ".into(),
         ]));
         help_lines.push(Line::from(vec![
-            format!("<{}> <{}> <{}> <{}>", key_config.column1, key_config.column2, key_config.column3, key_config.column4).cyan(),
+            format!(
+                "<{}> <{}> <{}> <{}>",
+                key_config.column1, key_config.column2, key_config.column3, key_config.column4
+            )
+            .cyan(),
             " - left columns ".into(),
         ]));
         help_lines.push(Line::from(vec![
-            format!("<{}> <{}> <{}> <{}>", key_config.column5, key_config.column6, key_config.column7, key_config.column8).cyan(),
+            format!(
+                "<{}> <{}> <{}> <{}>",
+                key_config.column5, key_config.column6, key_config.column7, key_config.column8
+            )
+            .cyan(),
             " - right columns ".into(),
         ]));
         help_lines.push(Line::from("\n"));
@@ -766,7 +782,7 @@ mod render {
     pub(crate) fn render_selection_journey_modal(
         area: Rect,
         buf: &mut Buffer,
-        next_game_ids: (u16, Vec<u16>),
+        next_game_ids: (GameId, Vec<GameId>),
     ) {
         let title = Line::from(" Journey ");
         let instructions = Line::from(vec![" Close ".into(), "<Esc> ".blue().bold()]);
@@ -776,7 +792,7 @@ mod render {
 
         let mut selection_lines: Vec<Line> = vec![];
 
-        let next_game_exists = next_game_ids.0 != 64001;
+        let next_game_exists = next_game_ids.0 .0 != 64001;
         let skipped_games_exist = next_game_ids.1.len() > 0;
         let journey_completed = !next_game_exists && !skipped_games_exist;
 
@@ -790,7 +806,7 @@ mod render {
                 selection_lines.push(Line::from(vec![
                     "<1>".blue().bold(),
                     " (next game) : ".into(),
-                    format!("{:>5}", next_game_ids.0).into(),
+                    format!("{:>5}", next_game_ids.0 .0).into(),
                 ]));
                 selection_lines.push(Line::from(vec![
                     "<s>".blue().bold(),
@@ -807,7 +823,7 @@ mod render {
                 for skipped in next_game_ids.1.iter().take(8) {
                     selection_lines.push(Line::from(vec![
                         format!("<{}>", key).blue().bold(),
-                        format!(" : {:>5}", skipped).into(),
+                        format!(" : {:>5}", skipped.0).into(),
                     ]));
                     key += 1;
                 }

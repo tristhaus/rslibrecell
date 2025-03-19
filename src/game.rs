@@ -23,11 +23,15 @@ use crate::{card::Card, game::prng::Prng};
 /// Contains a certain pseudo-random number generator.
 mod prng;
 
+/// Defines the ID of a FreeCell game.
+#[derive(Clone, Debug, PartialEq)]
+pub struct GameId(pub u16);
+
 /// Defines a FreeCell game.
 #[derive(Clone, Debug, PartialEq)]
 pub struct Game {
     /// The ID of the game.
-    pub id: u16,
+    pub id: GameId,
     /// The cells (top-left) of the game.
     pub cells: [Option<Card>; 4],
     /// The foundations (top-right, target area) of the game.
@@ -42,7 +46,7 @@ impl fmt::Display for Game {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let mut result = String::from("RustLibreCell              ");
 
-        let id = self.id.to_string();
+        let id = self.id.0.to_string();
 
         for _ in 0..(5 - id.len()) {
             result += " ";
@@ -135,7 +139,7 @@ impl TryFrom<&str> for Game {
         }
 
         let game_id = match game_id.trim().parse::<u16>() {
-            Ok(id) => id,
+            Ok(id) => GameId(id),
             Err(_) => return Err(()),
         };
 
@@ -234,8 +238,8 @@ impl Game {
     ///
     /// # Panics
     /// The method will panic if the underlying code, especially the PRNG, panics.
-    pub(crate) fn from_id(id: u16) -> Game {
-        let mut prng = Prng { state: id as u32 };
+    pub(crate) fn from_id(id: GameId) -> Game {
+        let mut prng = Prng { state: id.0 as u32 };
 
         let mut game = Game {
             id,

@@ -20,7 +20,11 @@ use std::{cell::RefCell, fmt::Debug, rc::Rc};
 
 use rand::Rng;
 
-use crate::{game::Game, journey_handler::{journey_repository::PersistJourney, JourneyHandler}, r#move::{apply, automove, Move}};
+use crate::{
+    game::{Game, GameId},
+    journey_handler::{journey_repository::PersistJourney, JourneyHandler},
+    r#move::{apply, automove, Move},
+};
 
 /// A structure to hold a game and its history.
 #[derive(Debug)]
@@ -51,7 +55,7 @@ where
 
     /// Replaces the currently held game and its history (if any)
     /// with the game defined by the given ID.
-    pub fn game_from_id(&mut self, id: u16) {
+    pub fn game_from_id(&mut self, id: GameId) {
         self.game = Some(Game::from_id(id));
         self.history.clear();
     }
@@ -67,7 +71,7 @@ where
             let candidate = rand::rng().random_range(1u16..64001u16);
 
             if candidate != UNSOLVABLE_GAME {
-                self.game_from_id(candidate);
+                self.game_from_id(GameId(candidate));
                 break;
             }
         }
@@ -98,7 +102,7 @@ where
         if self.game.as_ref().unwrap().is_won() {
             self.journey_handler
                 .borrow_mut()
-                .receive_notification_game_won(self.game.as_ref().unwrap().id);
+                .receive_notification_game_won(self.game.as_ref().unwrap().id.clone());
         }
 
         return Ok(());

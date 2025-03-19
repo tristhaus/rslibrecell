@@ -153,7 +153,7 @@ fn render_random_games() {
 fn render_fixed_game() {
     let mut app = helper::setup_app();
     let mut buf = Buffer::empty(Rect::new(0, 0, 50, 24));
-    app.game_from_u16_id(1);
+    app.game_from_numeric_id(GameId(1));
 
     app.render(buf.area, &mut buf);
 
@@ -233,7 +233,7 @@ fn render_fixed_game() {
 fn render_fixed_game_use_game_keys() {
     let mut app = helper::setup_app();
     let mut buf = Buffer::empty(Rect::new(0, 0, 50, 24));
-    app.game_from_u16_id(1);
+    app.game_from_numeric_id(GameId(1));
 
     app.handle_key_event(KeyCode::Char('k').into());
     app.handle_key_event(KeyCode::Char('q').into());
@@ -457,7 +457,7 @@ fn render_fixed_game_use_game_keys() {
 fn render_fixed_won_game() {
     let mut app = helper::setup_app();
     let mut buf = Buffer::empty(Rect::new(0, 0, 50, 24));
-    app.game_from_u16_id(100);
+    app.game_from_numeric_id(GameId(100));
 
     let mut punch_key = |key: char| {
         app.handle_key_event(KeyCode::Char(key).into());
@@ -649,7 +649,8 @@ fn render_help_modal() {
     };
 
     let mut mock = MockPersistJourney::new();
-    mock.expect_read().return_const((123, vec![117, 118]));
+    mock.expect_read()
+        .return_const((GameId(123), vec![GameId(117), GameId(118)]));
     mock.expect_write().return_const(());
     let mut app = App::new(custom_key_config, mock);
 
@@ -977,7 +978,7 @@ fn handle_key_event_selection_id_modal_valid() {
 
     app.handle_key_event(KeyCode::Enter.into());
     assert_eq!(app.app_state, AppState::Base);
-    assert_eq!(123, app.game_handler.game.as_ref().unwrap().id);
+    assert_eq!(GameId(123), app.game_handler.game.as_ref().unwrap().id);
 
     app.handle_key_event(KeyCode::F(3).into());
     assert_eq!(app.app_state, EMPTY_ENTRY_STATE);
@@ -1339,7 +1340,8 @@ fn render_selection_id_modal_invalid() {
 #[test]
 fn handle_key_event_selection_journey_modal() {
     let mut mock = MockPersistJourney::new();
-    mock.expect_read().return_const((123, vec![117, 118]));
+    mock.expect_read()
+        .return_const((GameId(123), vec![GameId(117), GameId(118)]));
     mock.expect_write().return_const(());
     let mut app = App::new(helper::get_default_key_config(), mock);
 
@@ -1350,26 +1352,42 @@ fn handle_key_event_selection_journey_modal() {
     // start next game
     app.handle_key_event(KeyCode::Char('1').into());
     assert_eq!(AppState::Base, app.app_state);
-    assert!(app.game_handler.game.as_ref().is_some_and(|x| x.id == 123));
+    assert!(app
+        .game_handler
+        .game
+        .as_ref()
+        .is_some_and(|x| x.id == GameId(123)));
 
     // start second skipped game
     app.handle_key_event(KeyCode::Char('!').into());
     app.handle_key_event(KeyCode::Char('3').into());
     assert_eq!(AppState::Base, app.app_state);
-    assert!(app.game_handler.game.as_ref().is_some_and(|x| x.id == 118));
+    assert!(app
+        .game_handler
+        .game
+        .as_ref()
+        .is_some_and(|x| x.id == GameId(118)));
 
     // skip another game
     app.handle_key_event(KeyCode::Char('!').into());
     app.handle_key_event(KeyCode::Char('s').into());
     app.handle_key_event(KeyCode::Char('4').into());
     assert_eq!(AppState::Base, app.app_state);
-    assert!(app.game_handler.game.as_ref().is_some_and(|x| x.id == 123));
+    assert!(app
+        .game_handler
+        .game
+        .as_ref()
+        .is_some_and(|x| x.id == GameId(123)));
 
     // after skip, new next game is there
     app.handle_key_event(KeyCode::Char('!').into());
     app.handle_key_event(KeyCode::Char('1').into());
     assert_eq!(AppState::Base, app.app_state);
-    assert!(app.game_handler.game.as_ref().is_some_and(|x| x.id == 124));
+    assert!(app
+        .game_handler
+        .game
+        .as_ref()
+        .is_some_and(|x| x.id == GameId(124)));
 
     // ignore key when no skipped game is attached to it
     app.handle_key_event(KeyCode::Char('!').into());
@@ -1380,9 +1398,14 @@ fn handle_key_event_selection_journey_modal() {
 #[test]
 fn make_journey_handle_next_won_game() {
     let mut mock = MockPersistJourney::new();
-    mock.expect_read().once().return_const((100, vec![55, 66]));
+    mock.expect_read()
+        .once()
+        .return_const((GameId(100), vec![GameId(55), GameId(66)]));
     mock.expect_write()
-        .with(predicate::eq(101), predicate::eq(vec![55, 66]))
+        .with(
+            predicate::eq(GameId(101)),
+            predicate::eq(vec![GameId(55), GameId(66)]),
+        )
         .once()
         .return_const(());
     let mut app = App::new(helper::get_default_key_config(), mock);
@@ -1492,9 +1515,11 @@ fn make_journey_handle_next_won_game() {
 #[test]
 fn make_journey_handle_skipped_won_game() {
     let mut mock = MockPersistJourney::new();
-    mock.expect_read().once().return_const((121, vec![44, 100]));
+    mock.expect_read()
+        .once()
+        .return_const((GameId(121), vec![GameId(44), GameId(100)]));
     mock.expect_write()
-        .with(predicate::eq(121), predicate::eq(vec![44]))
+        .with(predicate::eq(GameId(121)), predicate::eq(vec![GameId(44)]))
         .once()
         .return_const(());
     let mut app = App::new(helper::get_default_key_config(), mock);
@@ -1604,7 +1629,7 @@ fn make_journey_handle_skipped_won_game() {
 #[test]
 fn render_selection_journey_modal_no_skipped() {
     let mut mock = MockPersistJourney::new();
-    mock.expect_read().return_const((1, vec![]));
+    mock.expect_read().return_const((GameId(1), vec![]));
     mock.expect_write().return_const(());
     let mut app = App::new(helper::get_default_key_config(), mock);
 
@@ -1659,7 +1684,7 @@ fn render_selection_journey_modal_no_skipped() {
 fn render_selection_journey_modal_no_next_game() {
     let mut mock = MockPersistJourney::new();
     mock.expect_read()
-        .return_const((64001, vec![111, 222, 12345]));
+        .return_const((GameId(64001), vec![GameId(111), GameId(222), GameId(12345)]));
     mock.expect_write().return_const(());
     let mut app = App::new(helper::get_default_key_config(), mock);
 
@@ -1714,8 +1739,19 @@ fn render_selection_journey_modal_no_next_game() {
 #[test]
 fn render_selection_journey_modal_next_game_and_eight_skipped_games() {
     let mut mock = MockPersistJourney::new();
-    mock.expect_read()
-        .return_const((23442, vec![111, 222, 333, 444, 555, 666, 777, 888]));
+    mock.expect_read().return_const((
+        GameId(23442),
+        vec![
+            GameId(111),
+            GameId(222),
+            GameId(333),
+            GameId(444),
+            GameId(555),
+            GameId(666),
+            GameId(777),
+            GameId(888),
+        ],
+    ));
     mock.expect_write().return_const(());
     let mut app = App::new(helper::get_default_key_config(), mock);
 
@@ -1778,8 +1814,20 @@ fn render_selection_journey_modal_next_game_and_eight_skipped_games() {
 #[test]
 fn render_selection_journey_modal_next_game_and_many_skipped_games() {
     let mut mock = MockPersistJourney::new();
-    mock.expect_read()
-        .return_const((23442, vec![111, 222, 333, 444, 555, 666, 777, 888, 999]));
+    mock.expect_read().return_const((
+        GameId(23442),
+        vec![
+            GameId(111),
+            GameId(222),
+            GameId(333),
+            GameId(444),
+            GameId(555),
+            GameId(666),
+            GameId(777),
+            GameId(888),
+            GameId(999),
+        ],
+    ));
     mock.expect_write().return_const(());
     let mut app = App::new(helper::get_default_key_config(), mock);
 
@@ -1842,7 +1890,7 @@ fn render_selection_journey_modal_next_game_and_many_skipped_games() {
 #[test]
 fn render_selection_journey_modal_completed() {
     let mut mock = MockPersistJourney::new();
-    mock.expect_read().return_const((64001, vec![]));
+    mock.expect_read().return_const((GameId(64001), vec![]));
     mock.expect_write().return_const(());
     let mut app = App::new(helper::get_default_key_config(), mock);
 
@@ -1898,7 +1946,8 @@ mod helper {
     pub fn setup_app() -> App<MockPersistJourney> {
         let key_config = get_default_key_config();
         let mut mock = MockPersistJourney::new();
-        mock.expect_read().return_const((123, vec![117, 118]));
+        mock.expect_read()
+            .return_const((GameId(123), vec![GameId(117), GameId(118)]));
         mock.expect_write().return_const(());
         App::new(key_config, mock)
     }

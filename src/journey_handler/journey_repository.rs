@@ -18,14 +18,16 @@
 
 use mockall::automock;
 
+use crate::game::GameId;
+
 #[automock]
 /// Defines the behavior to persist a journey state.
 pub trait PersistJourney {
     /// Reads a journey from the underlying medium.
-    fn read(&self) -> (u16, Vec<u16>);
+    fn read(&self) -> (GameId, Vec<GameId>);
 
     /// Writes a journey to the underlying medium.
-    fn write(&self, next: u16, skipped: Vec<u16>) -> ();
+    fn write(&self, next: GameId, skipped: Vec<GameId>) -> ();
 }
 
 #[derive(Debug)]
@@ -33,7 +35,7 @@ pub trait PersistJourney {
 pub struct DiskJourneyRepo {}
 
 impl PersistJourney for DiskJourneyRepo {
-    fn read(&self) -> (u16, Vec<u16>) {
+    fn read(&self) -> (GameId, Vec<GameId>) {
         let data_path = DiskJourneyRepo::get_data_path();
 
         match std::fs::exists(&data_path) {
@@ -42,14 +44,14 @@ impl PersistJourney for DiskJourneyRepo {
                     let bytes = DiskJourneyRepo::read_from_file(data_path.as_path());
                     return DiskJourneyRepo::deserialize(&bytes);
                 } else {
-                    (1, vec![])
+                    (GameId(1), vec![])
                 }
             }
             Err(err) => panic!("std::fs error '{}'", err.kind().to_string()),
         }
     }
 
-    fn write(&self, next: u16, skipped: Vec<u16>) -> () {
+    fn write(&self, next: GameId, skipped: Vec<GameId>) -> () {
         let data_path = DiskJourneyRepo::get_data_path();
 
         let mut data_dir = data_path.clone();
@@ -108,7 +110,7 @@ impl DiskJourneyRepo {
     }
 
     /// Deserializes an appropriate number of bytes into journey data.
-    pub(crate) fn deserialize(bytes: &Vec<u8>) -> (u16, Vec<u16>) {
+    pub(crate) fn deserialize(bytes: &Vec<u8>) -> (GameId, Vec<GameId>) {
         if bytes.len() < 4 {
             panic!("too little data (<4)")
         }
@@ -121,18 +123,18 @@ impl DiskJourneyRepo {
             panic!("too little data (mismatch in skipped)")
         }
 
-        let mut all_skipped: Vec<u16> = vec![];
+        let mut all_skipped: Vec<GameId> = vec![];
 
         for i in 0..(all_skipped_count as usize) {
             let skipped_game = (bytes[4 + 2 * i] as u16) * 256 + (bytes[5 + 2 * i] as u16);
-            all_skipped.push(skipped_game);
+            all_skipped.push(GameId(skipped_game));
         }
 
-        return (next_game, all_skipped);
+        return (GameId(next_game), all_skipped);
     }
 
     /// Serializes journey data into bytes.
-    pub(crate) fn serialize(next: u16, skipped: Vec<u16>) -> Vec<u8> {
+    pub(crate) fn serialize(next: GameId, skipped: Vec<GameId>) -> Vec<u8> {
         let mut result: Vec<u8> = vec![];
 
         let mut push = |i: u16| {
@@ -142,11 +144,11 @@ impl DiskJourneyRepo {
             result.push(second);
         };
 
-        push(next);
+        push(next.0);
         push(skipped.len() as u16);
 
         for skipped in skipped {
-            push(skipped);
+            push(skipped.0);
         }
 
         return result;

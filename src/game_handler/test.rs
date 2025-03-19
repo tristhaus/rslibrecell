@@ -30,14 +30,14 @@ fn gamehandler_game_from_id_contains_expected() {
 
     assert!(game_handler.game.is_none());
 
-    game_handler.game_from_id(1);
+    game_handler.game_from_id(GameId(1));
 
     assert!(game_handler
         .game
         .as_ref()
         .is_some_and(|x| x.columns[0][0] == Card::from_str("J♦")));
 
-    game_handler.game_from_id(2);
+    game_handler.game_from_id(GameId(2));
 
     assert!(game_handler
         .game
@@ -48,7 +48,7 @@ fn gamehandler_game_from_id_contains_expected() {
 #[test]
 fn gamehandler_random_game_creates_different_game() {
     let mut game_handler = helper::setup_game_handler();
-    game_handler.game_from_id(1);
+    game_handler.game_from_id(GameId(1));
 
     assert!(game_handler
         .game
@@ -73,7 +73,7 @@ fn gamehandler_random_game_creates_different_game() {
 #[test]
 fn gamehandler_make_move_works_correctly() {
     let mut game_handler = helper::setup_game_handler();
-    game_handler.game_from_id(123);
+    game_handler.game_from_id(GameId(123));
 
     let initial = game_handler.game.as_ref().unwrap().to_string();
 
@@ -155,7 +155,7 @@ fn gamehandler_make_move_works_correctly() {
 #[test]
 fn gamehandler_make_move_rejects_illegal_move() {
     let mut game_handler = helper::setup_game_handler();
-    game_handler.game_from_id(123);
+    game_handler.game_from_id(GameId(123));
 
     assert!(game_handler
         .make_move(Move {
@@ -168,16 +168,17 @@ fn gamehandler_make_move_rejects_illegal_move() {
 #[test]
 fn gamehandler_win_entire_game_and_trigger_journey_handler() {
     let mut mock = MockPersistJourney::new();
-    mock.expect_read().return_const((123, vec![100, 118]));
+    mock.expect_read()
+        .return_const((GameId(123), vec![GameId(100), GameId(118)]));
     mock.expect_write()
-        .with(predicate::eq(123), predicate::eq(vec![118]))
+        .with(predicate::eq(GameId(123)), predicate::eq(vec![GameId(118)]))
         .once()
         .return_const(());
 
     let journey_handler = Rc::new(RefCell::new(JourneyHandler::new(mock)));
     let mut game_handler = GameHandler::new(journey_handler);
 
-    game_handler.game_from_id(100);
+    game_handler.game_from_id(GameId(100));
 
     let mut make_move_and_assert = |mv: Move| {
         assert!(game_handler.make_move(mv).is_ok());
@@ -325,7 +326,7 @@ fn gamehandler_win_entire_game_and_trigger_journey_handler() {
 #[test]
 fn gamehandler_revert_works_correctly() {
     let mut game_handler = helper::setup_game_handler();
-    game_handler.game_from_id(123);
+    game_handler.game_from_id(GameId(123));
 
     let initial_reference = concat!(
         "RustLibreCell                #123 \n",
@@ -379,7 +380,7 @@ fn gamehandler_revert_works_correctly() {
 #[test]
 fn gamehandler_revert_errors_on_initial_state() {
     let mut game_handler = helper::setup_game_handler();
-    game_handler.game_from_id(123);
+    game_handler.game_from_id(GameId(123));
 
     assert!(game_handler.revert().is_err());
 
@@ -400,7 +401,8 @@ mod helper {
 
     pub fn setup_game_handler() -> GameHandler<MockPersistJourney> {
         let mut mock = MockPersistJourney::new();
-        mock.expect_read().return_const((123, vec![117, 118]));
+        mock.expect_read()
+            .return_const((GameId(123), vec![GameId(117), GameId(118)]));
         mock.expect_write().return_const(());
         let journey_handler = Rc::new(RefCell::new(JourneyHandler::new(mock)));
         GameHandler::new(journey_handler)

@@ -24,7 +24,7 @@ fn deserialize_with_skipped() {
 
     let actual = DiskJourneyRepo::deserialize(&input);
 
-    let expected = (17, vec![11, 515]);
+    let expected = (GameId(17), vec![GameId(11), GameId(515)]);
 
     assert_eq!(actual, expected);
 }
@@ -35,7 +35,7 @@ fn deserialize_without_skipped() {
 
     let actual = DiskJourneyRepo::deserialize(&input);
 
-    let expected = (17, vec![]);
+    let expected = (GameId(17), vec![]);
 
     assert_eq!(actual, expected);
 }
@@ -58,7 +58,7 @@ fn deserialize_too_little_data_mismatch() {
 
 #[test]
 fn serialize_with_skipped() {
-    let actual = DiskJourneyRepo::serialize(17, vec![11, 515]);
+    let actual = DiskJourneyRepo::serialize(GameId(17), vec![GameId(11), GameId(515)]);
 
     let expected: Vec<u8> = vec![0x00, 0x11, 0x00, 0x02, 0x00, 0x0b, 0x02, 0x03];
 
@@ -67,7 +67,7 @@ fn serialize_with_skipped() {
 
 #[test]
 fn serialize_without_skipped() {
-    let actual = DiskJourneyRepo::serialize(17, vec![]);
+    let actual = DiskJourneyRepo::serialize(GameId(17), vec![]);
 
     let expected: Vec<u8> = vec![0x00, 0x11, 0x00, 0x00];
 

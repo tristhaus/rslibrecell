@@ -21,7 +21,7 @@ use super::*;
 #[test]
 fn game_can_be_cloned_yields_independent_instances() {
     let mut game = Game {
-        id: 17,
+        id: GameId(17),
         cells: [None, None, None, None],
         foundations: [Vec::new(), Vec::new(), Vec::new(), Vec::new()],
         columns: [
@@ -38,13 +38,13 @@ fn game_can_be_cloned_yields_independent_instances() {
 
     let clone = game.clone();
 
-    game.id = 11;
+    game.id = GameId(11);
     game.cells[1] = Some(Card::from_id(2));
     game.foundations[2].push(Card::from_id(3));
     game.columns[3].push(Card::from_id(4));
 
-    assert_eq!(17, clone.id);
-    assert_eq!(11, game.id);
+    assert_eq!(GameId(17), clone.id);
+    assert_eq!(GameId(11), game.id);
 
     assert_eq!(None, clone.cells[1]);
     assert_eq!(Some(Card::from_id(2)), game.cells[1]);
@@ -59,7 +59,7 @@ fn game_can_be_cloned_yields_independent_instances() {
 #[test]
 fn game_partialeq_trait_works() {
     let mut game1 = Game {
-        id: 17,
+        id: GameId(17),
         cells: [None, None, None, None],
         foundations: [Vec::new(), Vec::new(), Vec::new(), Vec::new()],
         columns: [
@@ -81,7 +81,7 @@ fn game_partialeq_trait_works() {
     let game2 = game1.clone();
 
     let mut game3 = Game {
-        id: 17,
+        id: GameId(17),
         cells: [None, None, None, None],
         foundations: [Vec::new(), Vec::new(), Vec::new(), Vec::new()],
         columns: [
@@ -101,7 +101,7 @@ fn game_partialeq_trait_works() {
     game3.columns[3].push(Card::from_id(4));
 
     let mut game4 = Game {
-        id: 17,
+        id: GameId(17),
         cells: [None, None, None, None],
         foundations: [Vec::new(), Vec::new(), Vec::new(), Vec::new()],
         columns: [
@@ -121,7 +121,7 @@ fn game_partialeq_trait_works() {
     game4.columns[3].push(Card::from_id(4));
 
     let mut game5 = Game {
-        id: 17,
+        id: GameId(17),
         cells: [None, None, None, None],
         foundations: [Vec::new(), Vec::new(), Vec::new(), Vec::new()],
         columns: [
@@ -174,7 +174,7 @@ fn game_display_trait_works() {
         "                                  \n"
     );
     let game = Game {
-        id: 42,
+        id: GameId(42),
         cells: [
             Some(Card::from_str("T♣")),
             None,
@@ -278,7 +278,7 @@ fn game_tryfrom_ref_str_with_unicode_representation_works() {
     );
 
     let reference = Game {
-        id: 42,
+        id: GameId(42),
         cells: [
             Some(Card::from_str("T♣")),
             None,
@@ -521,7 +521,7 @@ fn game_from_id_00001_works() {
 
     let expected = Game::try_from(reference).unwrap();
 
-    let actual = Game::from_id(1);
+    let actual = Game::from_id(GameId(1));
 
     assert_eq!(expected, actual);
 }
@@ -544,7 +544,7 @@ fn game_from_id_00617_works() {
 
     let expected = Game::try_from(reference).unwrap();
 
-    let actual = Game::from_id(617);
+    let actual = Game::from_id(GameId(617));
 
     assert_eq!(expected, actual);
 }
@@ -567,7 +567,7 @@ fn game_from_id_30828_works() {
 
     let expected = Game::try_from(reference).unwrap();
 
-    let actual = Game::from_id(30828);
+    let actual = Game::from_id(GameId(30828));
 
     assert_eq!(expected, actual);
 }

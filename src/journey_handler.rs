@@ -16,6 +16,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+use crate::game::GameId;
 use journey_repository::PersistJourney;
 
 /// Productive implementation of `HandleJourney`.
@@ -24,9 +25,9 @@ pub struct JourneyHandler<T>
 where
     T: PersistJourney,
 {
-    next: u16,
+    next: GameId,
     repository: T,
-    skipped: Vec<u16>,
+    skipped: Vec<GameId>,
 }
 
 impl<T> JourneyHandler<T>
@@ -34,15 +35,15 @@ where
     T: PersistJourney,
 {
     /// Obtains the ID of the next game and any skipped games.
-    pub fn next_game_ids(&self) -> (u16, Vec<u16>) {
-        (self.next, self.skipped.clone())
+    pub fn next_game_ids(&self) -> (GameId, Vec<GameId>) {
+        (self.next.clone(), self.skipped.clone())
     }
 
     /// Receives the notification that a game was won,
     /// as indicated by its ID.
-    pub fn receive_notification_game_won(&mut self, id: u16) -> () {
+    pub fn receive_notification_game_won(&mut self, id: GameId) -> () {
         if id == self.next {
-            self.next = self.next + 1;
+            self.next = GameId(self.next.0 + 1);
             self.persist();
         } else {
             let position = self.skipped.iter().position(|x| *x == id);
@@ -57,12 +58,12 @@ where
     /// Skips the next game, marks it as such,
     /// and moves to the game after that.
     pub fn skip_next_game(&mut self) -> () {
-        if self.next > 64000 {
+        if self.next.0 > 64000 {
             return;
         }
 
-        self.skipped.push(self.next);
-        self.next = self.next + 1;
+        self.skipped.push(self.next.clone());
+        self.next = GameId(self.next.0 + 1);
         self.persist();
     }
 }
@@ -84,7 +85,8 @@ where
 
     /// Persists the current state of the journey using the repository.
     fn persist(&self) -> () {
-        self.repository.write(self.next, self.skipped.clone());
+        self.repository
+            .write(self.next.clone(), self.skipped.clone());
     }
 }
 
